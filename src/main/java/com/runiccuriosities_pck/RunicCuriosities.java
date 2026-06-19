@@ -1,93 +1,78 @@
 package com.runiccuriosities_pck;
 
-import com.mojang.logging.LogUtils;
-import com.runiccuriosities_pck.init.ModItems;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
 
 @Mod(RunicCuriosities.MODID)
-public class RunicCuriosities
-{
+public class RunicCuriosities {
     public static final String MODID = "runic_curiosities";
-    private static final Logger LOGGER = LogUtils.getLogger();
 
-    public RunicCuriosities(FMLJavaModLoadingContext context)
-    {
-        IEventBus modEventBus = context.getModEventBus();
+    public RunicCuriosities() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Registra il setup comune
         modEventBus.addListener(this::commonSetup);
-
-        // REGISTRAZIONE DELLO DEFERRED REGISTER DEI TUOI OGGETTI
-        ModItems.ITEMS.register(modEventBus);
-
-        // Dice a Forge di ascoltare il metodo per registrare gli slot multipli
         modEventBus.addListener(this::enqueueIMC);
-
-        // Registro gli eventi principali di Forge e della porta creativa
-        MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
 
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        ModItems.ITEMS.register(modEventBus);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    // IL METODO ORA È AL POSTO GIUSTO: Fuori dal costruttore, indipendente all'interno della classe
-    private void enqueueIMC(final net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent event) {
-        // 1. Slot CHARM (Talismano) - Quantità: 1
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        // Registers networking pipeline for packet handling
+        event.enqueueWork(ModMessages::register);
+    }
+
+    private void enqueueIMC(final InterModEnqueueEvent event) {
+        // Registration for all custom Curios inventory slot types and sizes
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.CHARM.getMessageBuilder().size(1).build());
+                top.theillusivec4.curios.api.SlotTypePreset.CHARM.getMessageBuilder().size(3).build());
 
-        // 2. Slot RING (Anello) - Quantità: 2 (Il giocatore potrà equipaggiare due anelli!)
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.RING.getMessageBuilder().size(2).build());
+                top.theillusivec4.curios.api.SlotTypePreset.RING.getMessageBuilder().size(5).build());
 
-        // 3. Slot NECKLACE (Collana) - Quantità: 1
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.NECKLACE.getMessageBuilder().size(1).build());
+                top.theillusivec4.curios.api.SlotTypePreset.NECKLACE.getMessageBuilder().size(3).build());
 
-        // 4. Slot BELT (Cintura) - Quantità: 1
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.BELT.getMessageBuilder().size(1).build());
+                top.theillusivec4.curios.api.SlotTypePreset.BELT.getMessageBuilder().size(3).build());
+
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                top.theillusivec4.curios.api.SlotTypePreset.BACK.getMessageBuilder().size(2).build());
+
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                top.theillusivec4.curios.api.SlotTypePreset.BODY.getMessageBuilder().size(2).build());
+
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                top.theillusivec4.curios.api.SlotTypePreset.BRACELET.getMessageBuilder().size(2).build());
+
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                top.theillusivec4.curios.api.SlotTypePreset.HANDS.getMessageBuilder().size(2).build());
+
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                top.theillusivec4.curios.api.SlotTypePreset.HEAD.getMessageBuilder().size(2).build());
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
-        LOGGER.info("HELLO FROM COMMON SETUP");
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(ModItems.example_item);
-        }
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
-        LOGGER.info("HELLO from server starting");
-    }
-
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == net.minecraft.world.item.CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ModItems.EXAMPLE_ITEM.get());
+            event.accept(ModItems.GOLDEN_EMERALD.get());
+            event.accept(ModItems.EGG_OF_GLUTTONY.get());
+            event.accept(ModItems.SCARLET_EYES.get());
+            event.accept(ModItems.IGNITOR_SHIELD.get());
+            event.accept(ModItems.RECHARGING_BREAD.get());
+            event.accept(ModItems.GLASS_CLOTH.get());
+            event.accept(ModItems.GUARDIAN_GOLEM.get());
+            event.accept(ModItems.CAR_BOMB.get());
+            event.accept(ModItems.ENERGY_DRINK.get());
+            // NEW: Added the Time Hourglass directly into the Tools & Utilities creative menu tab
+            event.accept(ModItems.TIME_HOURGLASS.get());
         }
     }
 }

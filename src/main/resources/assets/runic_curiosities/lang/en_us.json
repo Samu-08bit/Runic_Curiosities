@@ -1,4 +1,15 @@
 {
-  "item.runic_curiosities.example_item": "Example Item",
-  "block.runic_curiosities.example_block": "Runic Test Block"
+  "item.runic_curiosities.example_item": "Talisman of Intuition",
+  "item.runic_curiosities.golden_emerald": "Golden Emerald",
+  "item.runic_curiosities.egg_of_gluttony": "Egg of Gluttony",
+  "item.runic_curiosities.scarlet_eyes": "Scarlet Eyes",
+  "item.runic_curiosities.ignitor_shield": "Ignitor Shield",
+  "item.runic_curiosities.recharging_bread": "Recharging Bread",
+  "item.runic_curiosities.glass_cloth": "Glass Cloth",
+  "item.runic_curiosities.guardian_golem": "Guardian Golem",
+  "item.runic_curiosities.car_bomb": "Car Bomb",
+  "item.runic_curiosities.energy_drink": "Energy Drink",
+  "item.runic_curiosities.time_hourglass": "Time Hourglass",
+  "key.runic_curiosities.freeze_time": "Freeze Time Ability",
+  "key.categories.runic_curiosities": "Runic Curiosities Mod"
 }

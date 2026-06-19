@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "runic_curiosities:example_item"
+    "runic_curiosities:golden_emerald",
+    "runic_curiosities:egg_of_gluttony",
+    "runic_curiosities:recharging_bread"
   ]
 }

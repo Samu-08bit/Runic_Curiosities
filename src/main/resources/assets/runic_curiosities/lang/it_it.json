@@ -1,4 +1,15 @@
 {
-  "item.runic_curiosities.example_item": "Oggetto Spiegazione",
-  "block.runic_curiosities.example_block": "Blocco Runico di Prova"
+  "item.runic_curiosities.example_item": "Talismano dell'Intuizione",
+  "item.runic_curiosities.golden_emerald": "Smeraldo Dorato",
+  "item.runic_curiosities.egg_of_gluttony": "Uovo della Gola",
+  "item.runic_curiosities.scarlet_eyes": "Occhi Scarlatti",
+  "item.runic_curiosities.ignitor_shield": "Scudo dell'Ignitore",
+  "item.runic_curiosities.recharging_bread": "Pane della Ricarica",
+  "item.runic_curiosities.glass_cloth": "Maglietta di Vetro",
+  "item.runic_curiosities.guardian_golem": "Golem Guardiano",
+  "item.runic_curiosities.car_bomb": "Autobomba",
+  "item.runic_curiosities.energy_drink": "Bevanda Energetica",
+  "item.runic_curiosities.time_hourglass": "Clessidra del Tempo",
+  "key.runic_curiosities.freeze_time": "Abilità Blocca Tempo",
+  "key.categories.runic_curiosities": "Mod Runic Curiosities"
 }
