@@ -42,4 +42,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> TIME_HOURGLASS = ITEMS.register("time_hourglass",
             () -> new TimeHourglassItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> SPONGE_RING = ITEMS.register("sponge_ring",
+            () -> new Item(new Item.Properties().stacksTo(1)));
 }

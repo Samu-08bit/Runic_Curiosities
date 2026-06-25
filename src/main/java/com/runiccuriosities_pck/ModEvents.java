@@ -31,6 +31,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -59,6 +65,7 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.CAR_BOMB.get());
             enforceUniqueCurio(player, ModItems.ENERGY_DRINK.get());
             enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
+            enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
 
             // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -261,6 +268,31 @@ public class ModEvents {
                     }
                 }
             }
+
+            // 12. Sponge Ring
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPONGE_RING.get()).isPresent()) {
+                Level level = player.level();
+                BlockPos playerPos = player.blockPosition();
+                int radius = 3;
+
+                // Loopa tra tutti i blocchi nel raggio di 3 blocchi e prosciugali!
+                for (int x = -radius; x <= radius; x++) {
+                    for (int y = -radius; y <= radius; y++) {
+                        for (int z = -radius; z <= radius; z++) {
+                            BlockPos pos = playerPos.offset(x, y, z);
+                            BlockState state = level.getBlockState(pos);
+
+                            if (state.getBlock() instanceof LiquidBlock || state.getBlock() instanceof BucketPickup) {
+                                if (state.getBlock() instanceof BucketPickup pickup) {
+                                    pickup.pickupBlock(level, pos, state);
+                                } else {
+                                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -334,10 +366,7 @@ public class ModEvents {
             }
         }
 
-        // ECCO LA PARTE PER IL GOLEM SALVATA CON LA DISABILITAZIONE PER ESPOSIONI / ATTACCHI PROPRI
         if (event.getEntity() instanceof Player player && !player.level().isClientSide) {
-
-            // LASCIA CHE IL GOLEM ATTACCHI SOLO SE L'ATTACCANTE NON E' IL PLAYER STESSO (Evita gli auto-danni col TNT)
             if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker != player) {
                 var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
                 if (golemOpt.isPresent()) {
@@ -413,28 +442,20 @@ public class ModEvents {
         }
     }
 
-    // --- AGGIUNTE PER DISABILITARE IL MOVIMENTO (WASD / SALTI) DURANTE IL TIMESTOP ---
-
-    // 1) Annulla l'azione di salto del giocatore se colpito dal Time Stop
     @SubscribeEvent
     public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
             MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
             if (slowness != null && slowness.getAmplifier() >= 4) {
-                // Annulla il salto del tutto settando la velocity y a 0
                 event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
             }
         }
     }
 
-    // 2) Disabilita completamente i controlli WASD lato client per chi ha il Time Stop.
-    // Usiamo una classe interna con value = Dist.CLIENT per assicurarci di non far crashare i server dedicati.
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onMovementInput(MovementInputUpdateEvent event) {
-            // Se l'entità (il giocatore) ha Slowness di livello 5 (amplifier 4) o superiore,
-            // disabilitiamo forzatamente l'input di movimento (WASD, salto, shift)
             if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                 MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 if (slowness != null && slowness.getAmplifier() >= 4) {

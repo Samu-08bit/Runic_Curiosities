@@ -1,7 +1,6 @@
 package com.runiccuriosities_pck;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,9 +14,11 @@ public class RunicCuriosities {
     public RunicCuriosities() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        // Registriamo la nostra nuova Tab per la Creativa
+        ModCreativeTabs.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::enqueueIMC);
-        modEventBus.addListener(this::addCreative);
 
         ModItems.ITEMS.register(modEventBus);
 
@@ -57,22 +58,5 @@ public class RunicCuriosities {
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
                 top.theillusivec4.curios.api.SlotTypePreset.HEAD.getMessageBuilder().size(2).build());
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == net.minecraft.world.item.CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.EXAMPLE_ITEM.get());
-            event.accept(ModItems.GOLDEN_EMERALD.get());
-            event.accept(ModItems.EGG_OF_GLUTTONY.get());
-            event.accept(ModItems.SCARLET_EYES.get());
-            event.accept(ModItems.IGNITOR_SHIELD.get());
-            event.accept(ModItems.RECHARGING_BREAD.get());
-            event.accept(ModItems.GLASS_CLOTH.get());
-            event.accept(ModItems.GUARDIAN_GOLEM.get());
-            event.accept(ModItems.CAR_BOMB.get());
-            event.accept(ModItems.ENERGY_DRINK.get());
-            // NEW: Added the Time Hourglass directly into the Tools & Utilities creative menu tab
-            event.accept(ModItems.TIME_HOURGLASS.get());
-        }
     }
 }
