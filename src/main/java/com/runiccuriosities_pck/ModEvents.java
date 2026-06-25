@@ -18,6 +18,8 @@ import net.minecraft.world.entity.vehicle.MinecartTNT;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -406,6 +408,44 @@ public class ModEvents {
                         }
                     }
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 6000, nextAmplifier, true, false, true));
+                }
+            }
+        }
+    }
+
+    // --- AGGIUNTE PER DISABILITARE IL MOVIMENTO (WASD / SALTI) DURANTE IL TIMESTOP ---
+
+    // 1) Annulla l'azione di salto del giocatore se colpito dal Time Stop
+    @SubscribeEvent
+    public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
+        if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+            MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            if (slowness != null && slowness.getAmplifier() >= 4) {
+                // Annulla il salto del tutto settando la velocity y a 0
+                event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
+            }
+        }
+    }
+
+    // 2) Disabilita completamente i controlli WASD lato client per chi ha il Time Stop.
+    // Usiamo una classe interna con value = Dist.CLIENT per assicurarci di non far crashare i server dedicati.
+    @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void onMovementInput(MovementInputUpdateEvent event) {
+            // Se l'entità (il giocatore) ha Slowness di livello 5 (amplifier 4) o superiore,
+            // disabilitiamo forzatamente l'input di movimento (WASD, salto, shift)
+            if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+                MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                if (slowness != null && slowness.getAmplifier() >= 4) {
+                    event.getInput().up = false;
+                    event.getInput().down = false;
+                    event.getInput().left = false;
+                    event.getInput().right = false;
+                    event.getInput().forwardImpulse = 0.0f;
+                    event.getInput().leftImpulse = 0.0f;
+                    event.getInput().jumping = false;
+                    event.getInput().shiftKeyDown = false;
                 }
             }
         }
