@@ -4,7 +4,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +18,7 @@ import net.minecraft.world.entity.vehicle.MinecartTNT;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
@@ -36,11 +36,16 @@ import java.util.List;
 public class ModEvents {
 
     @SubscribeEvent
+    public static void onCommandsRegister(RegisterCommandsEvent event) {
+        // AGGANCIAMO UFFICIALMENTE IL COMANDO AL SERVER
+        ModCommands.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
             Player player = event.player;
 
-            // Enforce uniqueness for all custom registration items to prevent duplication exploits
             enforceUniqueCurio(player, ModItems.EXAMPLE_ITEM.get());
             enforceUniqueCurio(player, ModItems.GOLDEN_EMERALD.get());
             enforceUniqueCurio(player, ModItems.EGG_OF_GLUTTONY.get());
@@ -53,32 +58,32 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.ENERGY_DRINK.get());
             enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
 
-            // 1. Talisman of Intuition (Head Slot)
+            // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false, true));
             }
 
-            // 2. Golden Emerald (Charm Slot)
+            // 2. Golden Emerald
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GOLDEN_EMERALD.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false, true));
             }
 
-            // 3. Egg of Gluttony (Charm Slot)
+            // 3. Egg of Gluttony
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EGG_OF_GLUTTONY.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 40, 0, true, false, true));
             }
 
-            // 4. Scarlet Eyes (Head Slot)
+            // 4. Scarlet Eyes
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SCARLET_EYES.get()).isPresent() && player.level().isNight()) {
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 210, 0, true, false, false));
             }
 
-            // 5. Ignitor Shield (Back Slot)
+            // 5. Ignitor Shield
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.IGNITOR_SHIELD.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
             }
 
-            // 6. Recharging Bread (Charm Slot)
+            // 6. Recharging Bread
             var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());
             if (breadOpt.isPresent()) {
                 ItemStack breadStack = breadOpt.get().stack();
@@ -113,7 +118,7 @@ public class ModEvents {
                 nbt.putInt("Charge", charge);
             }
 
-            // 7. Glass Cloth (Body Slot)
+            // 7. Glass Cloth
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GLASS_CLOTH.get()).isPresent()) {
                 boolean isInLiquid = player.isInWater() || player.isInLava() || player.isInFluidType();
 
@@ -126,7 +131,7 @@ public class ModEvents {
                 }
             }
 
-            // 8. Guardian Golem (Necklace Slot)
+            // 8. Guardian Golem
             var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
             if (golemOpt.isPresent()) {
                 ItemStack golemStack = golemOpt.get().stack();
@@ -166,9 +171,7 @@ public class ModEvents {
                                         nbt.remove("ActiveGolemUUID");
                                     }
                                 }
-                            } catch (Exception e) {
-                                // Safely catch tracking errors
-                            }
+                            } catch (Exception e) {}
                         }
                     }
                 }
@@ -192,7 +195,7 @@ public class ModEvents {
                 }
             }
 
-            // 9. Car Bomb (Belt Slot)
+            // 9. Car Bomb
             var bombOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.CAR_BOMB.get());
             if (bombOpt.isPresent()) {
                 ItemStack bombStack = bombOpt.get().stack();
@@ -221,14 +224,14 @@ public class ModEvents {
                 }
             }
 
-            // 10. Energy Drink (Hands Slot - Continuous Jump Boost, Speed, and Haste)
+            // 10. Energy Drink
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.ENERGY_DRINK.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.JUMP, 39, 0, true, false, true));
                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 39, 0, true, false, true));
                 player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 39, 0, true, false, true));
             }
 
-            // 11. Time Hourglass (Hands Slot - Soul Sand Auto-Recharge Logic)
+            // 11. Time Hourglass
             var hourglassOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.TIME_HOURGLASS.get());
             if (hourglassOpt.isPresent()) {
                 ItemStack stack = hourglassOpt.get().stack();
@@ -254,30 +257,6 @@ public class ModEvents {
                         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                                 SoundEvents.SOUL_ESCAPE, SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        LivingEntity entity = event.getEntity();
-
-        // Time freeze velocity tracking & AI isolation containment loops for mobs
-        if (!entity.level().isClientSide && entity.getPersistentData().contains("RunicTimeFreeze")) {
-            int ticks = entity.getPersistentData().getInt("RunicTimeFreeze");
-            if (ticks > 0) {
-                ticks--;
-                entity.getPersistentData().putInt("RunicTimeFreeze", ticks);
-
-                // Forcibly kill any accumulated velocity vectors to freeze them perfectly in mid-air
-                entity.setDeltaMovement(0, entity.getDeltaMovement().y < 0 ? 0 : entity.getDeltaMovement().y, 0);
-
-                if (ticks == 0) {
-                    if (entity instanceof Mob mob) {
-                        mob.setNoAi(false); // Restores active decision-making loops when time resumes
-                    }
-                    entity.getPersistentData().remove("RunicTimeFreeze");
                 }
             }
         }
@@ -353,37 +332,35 @@ public class ModEvents {
             }
         }
 
+        // ECCO LA PARTE PER IL GOLEM SALVATA CON LA DISABILITAZIONE PER ESPOSIONI / ATTACCHI PROPRI
         if (event.getEntity() instanceof Player player && !player.level().isClientSide) {
-            if (event.getSource().getEntity() instanceof LivingEntity attacker) {
 
-                // Prevent spawning if the attacker is the player themselves OR if the damage is an explosion
-                if (attacker != player && !event.getSource().is(DamageTypeTags.IS_EXPLOSION)) {
-                    var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
+            // LASCIA CHE IL GOLEM ATTACCHI SOLO SE L'ATTACCANTE NON E' IL PLAYER STESSO (Evita gli auto-danni col TNT)
+            if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker != player) {
+                var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
+                if (golemOpt.isPresent()) {
+                    ItemStack golemStack = golemOpt.get().stack();
+                    CompoundTag nbt = golemStack.getOrCreateTag();
 
-                    if (golemOpt.isPresent()) {
-                        ItemStack golemStack = golemOpt.get().stack();
-                        CompoundTag nbt = golemStack.getOrCreateTag();
+                    int uses = nbt.contains("Uses") ? nbt.getInt("Uses") : 2;
+                    int timer = nbt.contains("GolemTimer") ? nbt.getInt("GolemTimer") : 0;
 
-                        int uses = nbt.contains("Uses") ? nbt.getInt("Uses") : 2;
-                        int timer = nbt.contains("GolemTimer") ? nbt.getInt("GolemTimer") : 0;
+                    if (uses > 0 && timer == 0) {
+                        IronGolem guardian = EntityType.IRON_GOLEM.create(player.level());
+                        if (guardian != null) {
+                            guardian.setPos(player.getX(), player.getY(), player.getZ());
+                            guardian.setCustomName(Component.literal("Guardian"));
+                            guardian.setPlayerCreated(true);
+                            guardian.setTarget(attacker);
 
-                        if (uses > 0 && timer == 0) {
-                            IronGolem guardian = EntityType.IRON_GOLEM.create(player.level());
-                            if (guardian != null) {
-                                guardian.setPos(player.getX(), player.getY(), player.getZ());
-                                guardian.setCustomName(Component.literal("Guardian"));
-                                guardian.setPlayerCreated(true);
-                                guardian.setTarget(attacker);
+                            player.level().addFreshEntity(guardian);
 
-                                player.level().addFreshEntity(guardian);
+                            nbt.putUUID("ActiveGolemUUID", guardian.getUUID());
+                            nbt.putInt("GolemTimer", 1200);
+                            nbt.putInt("Uses", uses - 1);
 
-                                nbt.putUUID("ActiveGolemUUID", guardian.getUUID());
-                                nbt.putInt("GolemTimer", 1200);
-                                nbt.putInt("Uses", uses - 1);
-
-                                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                                        SoundEvents.IRON_GOLEM_DEATH, SoundSource.PLAYERS, 1.0F, 1.6F);
-                            }
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.IRON_GOLEM_DEATH, SoundSource.PLAYERS, 1.0F, 1.6F);
                         }
                     }
                 }
