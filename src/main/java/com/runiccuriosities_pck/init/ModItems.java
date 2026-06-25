@@ -33,7 +33,6 @@ public class ModItems {
     public static final RegistryObject<Item> GUARDIAN_GOLEM = ITEMS.register("guardian_golem",
             () -> new GuardianGolemItem(new Item.Properties().stacksTo(1)));
 
-    // NEW: Car Bomb Belt Item
     public static final RegistryObject<Item> CAR_BOMB = ITEMS.register("car_bomb",
             () -> new CarBombItem(new Item.Properties().stacksTo(1)));
 
@@ -44,5 +43,9 @@ public class ModItems {
             () -> new TimeHourglassItem(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> SPONGE_RING = ITEMS.register("sponge_ring",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
+    // Viper's Embrace
+    public static final RegistryObject<Item> VIPERS_EMBRACE = ITEMS.register("vipers_embrace",
             () -> new Item(new Item.Properties().stacksTo(1)));
 }

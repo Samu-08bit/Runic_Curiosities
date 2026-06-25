@@ -45,7 +45,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
-        // AGGANCIAMO UFFICIALMENTE IL COMANDO AL SERVER
+        // Officially hook the command to the server
         ModCommands.register(event.getDispatcher());
     }
 
@@ -66,6 +66,7 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.ENERGY_DRINK.get());
             enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
             enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
+            enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
 
             // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -275,7 +276,7 @@ public class ModEvents {
                 BlockPos playerPos = player.blockPosition();
                 int radius = 3;
 
-                // Loopa tra tutti i blocchi nel raggio di 3 blocchi e prosciugali!
+                // Loop through all blocks in a 3-block radius and drain them!
                 for (int x = -radius; x <= radius; x++) {
                     for (int y = -radius; y <= radius; y++) {
                         for (int z = -radius; z <= radius; z++) {
@@ -323,6 +324,14 @@ public class ModEvents {
         if (event.getSource().getEntity() instanceof Player player) {
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.IGNITOR_SHIELD.get()).isPresent()) {
                 event.getEntity().setSecondsOnFire(5);
+            }
+
+            // 13. Viper's Embrace Effect
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
+                LivingEntity target = event.getEntity();
+                // Apply Poison and Weakness for 10 seconds (200 ticks)
+                target.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
             }
 
             var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());

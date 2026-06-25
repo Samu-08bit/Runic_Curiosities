@@ -33,6 +33,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.ENERGY_DRINK.get());
                         pOutput.accept(ModItems.TIME_HOURGLASS.get());
                         pOutput.accept(ModItems.SPONGE_RING.get());
+                        pOutput.accept(ModItems.VIPERS_EMBRACE.get());
                     })
                     .build());
 
