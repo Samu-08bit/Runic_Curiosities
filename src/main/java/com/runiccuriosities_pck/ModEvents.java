@@ -10,6 +10,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +42,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
@@ -300,6 +304,30 @@ public class ModEvents {
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
                 if (player.hasEffect(MobEffects.POISON)) {
                     player.removeEffect(MobEffects.POISON);
+                }
+            }
+
+            // 14. Heart of Resolution - Resistance 1 & 10 Cuori Extra
+            AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
+            UUID heartUuid = UUID.fromString("87a6c9e0-1c3a-4b9d-8c1d-123456789abc"); // UUID univoco per questo modificatore
+
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.HEART_OF_RESOLUTION.get()).isPresent()) {
+                // Resistance 1
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 39, 0, true, false, true));
+
+                // +10 Cuori Rossi (+10 Max Health)
+                if (healthAttr != null && healthAttr.getModifier(heartUuid) == null) {
+                    healthAttr.addPermanentModifier(new AttributeModifier(heartUuid, "Heart of Resolution", 0.0D, AttributeModifier.Operation.ADDITION));
+                }
+            } else {
+                // Rimuove l'aumento di vita se il talismano viene tolto
+                if (healthAttr != null && healthAttr.getModifier(heartUuid) != null) {
+                    healthAttr.removeModifier(heartUuid);
+
+                    // Se la vita corrente è superiore alla vita massima aggiornata, sistemala
+                    if (player.getHealth() > player.getMaxHealth()) {
+                        player.setHealth(player.getMaxHealth());
+                    }
                 }
             }
         }
