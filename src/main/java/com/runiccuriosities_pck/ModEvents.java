@@ -9,7 +9,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,6 +30,8 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.PlayLevelSoundEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -73,7 +74,8 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
             enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
             enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
-            enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get()); // Added Warden Antennas
+            enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get());
+            enforceUniqueCurio(player, ModItems.SPIDER_BOOTS.get()); // Added Spider Boots
 
             // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -345,10 +347,16 @@ public class ModEvents {
                 );
 
                 for (LivingEntity entity : entitiesInRange) {
-                    // Apply effects for 200 ticks (10 seconds).
-                    // While they are in the zone, this resets to 10 seconds constantly.
                     entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false, true));
                     entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, true, false, true));
+                }
+            }
+
+            // 16. Spider Boots - Arrampicarsi sui muri
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
+                if (player.horizontalCollision) {
+                    player.setDeltaMovement(player.getDeltaMovement().x, 0.2D, player.getDeltaMovement().z);
+                    player.fallDistance = 0.0F; // Previene i danni da caduta accumulati durante l'arrampicata
                 }
             }
         }
@@ -473,6 +481,28 @@ public class ModEvents {
                     projectile.setYRot(projectile.getYRot() + 180F);
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 1.0F);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingFall(LivingFallEvent event) {
+        // Spider Boots - Immunità al danno da caduta
+        if (event.getEntity() instanceof Player player) {
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
+                event.setCanceled(true); // Cancella l'evento, nessun danno verrà applicato
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlaySoundAtEntity(PlayLevelSoundEvent.AtEntity event) {
+        // Spider Boots - Passi completamente silenziosi
+        if (event.getEntity() instanceof Player player) {
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
+                if (event.getSound() != null && event.getSound().value().getLocation().getPath().contains("step")) {
+                    event.setCanceled(true); // Cancella la riproduzione del suono dei passi
                 }
             }
         }

@@ -36,6 +36,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.VIPERS_EMBRACE.get());
                         pOutput.accept(ModItems.HEART_OF_RESOLUTION.get());
                         pOutput.accept(ModItems.WARDEN_ANTENNAS.get());
+                        pOutput.accept(ModItems.SPIDER_BOOTS.get());
                     })
                     .build());
 
