@@ -1,11 +1,14 @@
 package com.runiccuriosities_pck;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import top.theillusivec4.curios.api.SlotTypeMessage;
+import top.theillusivec4.curios.api.SlotTypePreset;
 
 @Mod(RunicCuriosities.MODID)
 public class RunicCuriosities {
@@ -33,30 +36,37 @@ public class RunicCuriosities {
     private void enqueueIMC(final InterModEnqueueEvent event) {
         // Registration for all custom Curios inventory slot types and sizes
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.CHARM.getMessageBuilder().size(3).build());
+                SlotTypePreset.CHARM.getMessageBuilder().size(3).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.RING.getMessageBuilder().size(5).build());
+                SlotTypePreset.RING.getMessageBuilder().size(5).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.NECKLACE.getMessageBuilder().size(3).build());
+                SlotTypePreset.NECKLACE.getMessageBuilder().size(3).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.BELT.getMessageBuilder().size(3).build());
+                SlotTypePreset.BELT.getMessageBuilder().size(3).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.BACK.getMessageBuilder().size(2).build());
+                SlotTypePreset.BACK.getMessageBuilder().size(2).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.BODY.getMessageBuilder().size(2).build());
+                SlotTypePreset.BODY.getMessageBuilder().size(2).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.BRACELET.getMessageBuilder().size(2).build());
+                SlotTypePreset.BRACELET.getMessageBuilder().size(2).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.HANDS.getMessageBuilder().size(2).build());
+                SlotTypePreset.HANDS.getMessageBuilder().size(2).build());
 
         net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
-                top.theillusivec4.curios.api.SlotTypePreset.HEAD.getMessageBuilder().size(2).build());
+                SlotTypePreset.HEAD.getMessageBuilder().size(3).build());
+
+        // Custom slot per i boots con l'icona corretta
+        net.minecraftforge.fml.InterModComms.sendTo("curios", "register_type", () ->
+                new SlotTypeMessage.Builder("boots")
+                        .size(2)
+                        .icon(new ResourceLocation("minecraft", "item/empty_armor_slot_boots"))
+                        .build());
     }
 }
