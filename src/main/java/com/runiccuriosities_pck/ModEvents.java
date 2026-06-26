@@ -45,7 +45,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
-        // Officially hook the command to the server
+        // Officially register the command to the server
         ModCommands.register(event.getDispatcher());
     }
 
@@ -294,6 +294,13 @@ public class ModEvents {
                     }
                 }
             }
+
+            // 13. Viper's Embrace - Immunity to poison
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
+                if (player.hasEffect(MobEffects.POISON)) {
+                    player.removeEffect(MobEffects.POISON);
+                }
+            }
         }
     }
 
@@ -326,14 +333,6 @@ public class ModEvents {
                 event.getEntity().setSecondsOnFire(5);
             }
 
-            // 13. Viper's Embrace Effect
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
-                LivingEntity target = event.getEntity();
-                // Apply Poison and Weakness for 10 seconds (200 ticks)
-                target.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
-                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
-            }
-
             var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());
             if (breadOpt.isPresent()) {
                 ItemStack breadStack = breadOpt.get().stack();
@@ -346,6 +345,13 @@ public class ModEvents {
                         target.level().addFreshEntity(lightning);
                     }
                 }
+            }
+
+            // Viper's Embrace - Apply Poison and Weakness on hit (200 ticks = 10 seconds)
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
+                LivingEntity target = event.getEntity();
+                target.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
             }
 
             boolean isRanged = event.getSource().getDirectEntity() instanceof Projectile;
@@ -451,20 +457,25 @@ public class ModEvents {
         }
     }
 
+    // 1) Cancel the player's jumping action if hit by Time Stop
     @SubscribeEvent
     public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
             MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
             if (slowness != null && slowness.getAmplifier() >= 4) {
+                // Completely cancel the jump by setting the y velocity to 0
                 event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
             }
         }
     }
 
+    // 2) Completely disable client-side WASD controls for those affected by Time Stop
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onMovementInput(MovementInputUpdateEvent event) {
+            // If the entity (player) has Slowness level 5 (amplifier 4) or higher,
+            // forcefully disable movement input (WASD, jump, shift)
             if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                 MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 if (slowness != null && slowness.getAmplifier() >= 4) {
