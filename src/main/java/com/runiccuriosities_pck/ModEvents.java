@@ -67,6 +67,7 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
             enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
             enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
+            enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
 
             // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {

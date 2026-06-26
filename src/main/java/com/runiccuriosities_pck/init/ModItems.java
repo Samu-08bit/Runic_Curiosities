@@ -48,4 +48,7 @@ public class ModItems {
     // Viper's Embrace
     public static final RegistryObject<Item> VIPERS_EMBRACE = ITEMS.register("vipers_embrace",
             () -> new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> HEART_OF_RESOLUTION = ITEMS.register("heart_of_resolution",
+            () -> new HeartOfResolutionItem(new Item.Properties().stacksTo(1)));
 }
