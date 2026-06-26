@@ -51,4 +51,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> HEART_OF_RESOLUTION = ITEMS.register("heart_of_resolution",
             () -> new HeartOfResolutionItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> WARDEN_ANTENNAS = ITEMS.register("warden_antennas",
+            () -> new Item(new Item.Properties().stacksTo(1)));
 }

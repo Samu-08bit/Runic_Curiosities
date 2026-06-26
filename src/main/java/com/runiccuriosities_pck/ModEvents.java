@@ -10,6 +10,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +21,7 @@ import net.minecraft.world.entity.vehicle.MinecartTNT;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -39,6 +43,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
@@ -68,6 +73,7 @@ public class ModEvents {
             enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
             enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
             enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
+            enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get()); // Added Warden Antennas
 
             // 1. Talisman of Intuition
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -277,7 +283,7 @@ public class ModEvents {
                 BlockPos playerPos = player.blockPosition();
                 int radius = 3;
 
-                // Loop through all blocks in a 3-block radius and drain them!
+                // Loop through all blocks in a 3-block radius and drain them
                 for (int x = -radius; x <= radius; x++) {
                     for (int y = -radius; y <= radius; y++) {
                         for (int z = -radius; z <= radius; z++) {
@@ -296,10 +302,53 @@ public class ModEvents {
                 }
             }
 
-            // 13. Viper's Embrace - Immunity to poison
+            // 13. Viper's Embrace
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
                 if (player.hasEffect(MobEffects.POISON)) {
                     player.removeEffect(MobEffects.POISON);
+                }
+            }
+
+            // 14. Heart of Resolution
+            AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
+            UUID heartUuid = UUID.fromString("87a6c9e0-1c3a-4b9d-8c1d-123456789abc");
+
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.HEART_OF_RESOLUTION.get()).isPresent()) {
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 39, 0, true, false, true));
+
+                if (healthAttr != null && healthAttr.getModifier(heartUuid) == null) {
+                    healthAttr.addPermanentModifier(new AttributeModifier(heartUuid, "Heart of Resolution", 0.0D, AttributeModifier.Operation.ADDITION));
+                }
+            } else {
+                if (healthAttr != null && healthAttr.getModifier(heartUuid) != null) {
+                    healthAttr.removeModifier(heartUuid);
+
+                    if (player.getHealth() > player.getMaxHealth()) {
+                        player.setHealth(player.getMaxHealth());
+                    }
+                }
+            }
+
+            // 15. Warden Antennas
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.WARDEN_ANTENNAS.get()).isPresent()) {
+                // Create a 9x9x9 bounding box centered on the player
+                AABB searchArea = new AABB(
+                        player.getX() - 9.0D, player.getY() - 9.0D, player.getZ() - 9.0D,
+                        player.getX() + 9.0D, player.getY() + 9.0D, player.getZ() + 9.0D
+                );
+
+                // Find all living entities in range, excluding the player using the talisman
+                List<LivingEntity> entitiesInRange = player.level().getEntitiesOfClass(
+                        LivingEntity.class,
+                        searchArea,
+                        entity -> entity != player // Exclude the user, but this will affect other players
+                );
+
+                for (LivingEntity entity : entitiesInRange) {
+                    // Apply effects for 200 ticks (10 seconds).
+                    // While they are in the zone, this resets to 10 seconds constantly.
+                    entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false, true));
+                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, true, false, true));
                 }
             }
         }
@@ -348,7 +397,6 @@ public class ModEvents {
                 }
             }
 
-            // Viper's Embrace - Apply Poison and Weakness on hit (200 ticks = 10 seconds)
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
                 LivingEntity target = event.getEntity();
                 target.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
