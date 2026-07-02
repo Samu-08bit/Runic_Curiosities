@@ -57,4 +57,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> SPIDER_BOOTS = ITEMS.register("spider_boots",
             () -> new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> FAIRY_WINGS = ITEMS.register("fairy_wings",
+            () -> new Item(new Item.Properties().stacksTo(1)));
 }

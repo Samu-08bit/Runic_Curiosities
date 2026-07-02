@@ -86,6 +86,7 @@ public class ModEvents {
                 enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
                 enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get());
                 enforceUniqueCurio(player, ModItems.SPIDER_BOOTS.get());
+                enforceUniqueCurio(player, ModItems.FAIRY_WINGS.get()); // Added Fairy Wings
 
                 // 1. Talisman of Intuition
                 if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -357,6 +358,24 @@ public class ModEvents {
                     for (LivingEntity entity : entitiesInRange) {
                         entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false, true));
                         entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, true, false, true));
+                    }
+                }
+
+                // 17. Fairy Wings
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.FAIRY_WINGS.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
+                    player.addEffect(new MobEffectInstance(MobEffects.LUCK, 40, 0, true, false, true));
+
+                    if (!player.getAbilities().mayfly) {
+                        player.getAbilities().mayfly = true;
+                        player.onUpdateAbilities();
+                    }
+                } else {
+                    // Controlliamo che il giocatore non sia in creativa o spettatore per togliergli il volo in sicurezza
+                    if (!player.isCreative() && !player.isSpectator() && player.getAbilities().mayfly) {
+                        player.getAbilities().mayfly = false;
+                        player.getAbilities().flying = false;
+                        player.onUpdateAbilities();
                     }
                 }
             }

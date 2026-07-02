@@ -37,6 +37,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.HEART_OF_RESOLUTION.get());
                         pOutput.accept(ModItems.WARDEN_ANTENNAS.get());
                         pOutput.accept(ModItems.SPIDER_BOOTS.get());
+                        pOutput.accept(ModItems.FAIRY_WINGS.get());
                     })
                     .build());
 
