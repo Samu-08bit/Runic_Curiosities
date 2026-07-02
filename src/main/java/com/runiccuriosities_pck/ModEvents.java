@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -51,312 +52,312 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
-        // Officially register the command to the server
         ModCommands.register(event.getDispatcher());
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
+        if (event.phase == TickEvent.Phase.END) {
             Player player = event.player;
 
-            enforceUniqueCurio(player, ModItems.EXAMPLE_ITEM.get());
-            enforceUniqueCurio(player, ModItems.GOLDEN_EMERALD.get());
-            enforceUniqueCurio(player, ModItems.EGG_OF_GLUTTONY.get());
-            enforceUniqueCurio(player, ModItems.SCARLET_EYES.get());
-            enforceUniqueCurio(player, ModItems.IGNITOR_SHIELD.get());
-            enforceUniqueCurio(player, ModItems.RECHARGING_BREAD.get());
-            enforceUniqueCurio(player, ModItems.GLASS_CLOTH.get());
-            enforceUniqueCurio(player, ModItems.GUARDIAN_GOLEM.get());
-            enforceUniqueCurio(player, ModItems.CAR_BOMB.get());
-            enforceUniqueCurio(player, ModItems.ENERGY_DRINK.get());
-            enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
-            enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
-            enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
-            enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
-            enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get());
-            enforceUniqueCurio(player, ModItems.SPIDER_BOOTS.get()); // Added Spider Boots
-
-            // 1. Talisman of Intuition
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false, true));
+            // 16. Spider Boots - Arrampicarsi sui muri (Eseguito sia su client che server per un movimento fluido)
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
+                if (player.horizontalCollision) {
+                    player.setDeltaMovement(player.getDeltaMovement().x, 0.2D, player.getDeltaMovement().z);
+                    player.fallDistance = 0.0F; // Previene i danni da caduta accumulati durante l'arrampicata
+                }
             }
 
-            // 2. Golden Emerald
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GOLDEN_EMERALD.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false, true));
-            }
+            // Solo lato server per la logica principale
+            if (!player.level().isClientSide) {
+                enforceUniqueCurio(player, ModItems.EXAMPLE_ITEM.get());
+                enforceUniqueCurio(player, ModItems.GOLDEN_EMERALD.get());
+                enforceUniqueCurio(player, ModItems.EGG_OF_GLUTTONY.get());
+                enforceUniqueCurio(player, ModItems.SCARLET_EYES.get());
+                enforceUniqueCurio(player, ModItems.IGNITOR_SHIELD.get());
+                enforceUniqueCurio(player, ModItems.RECHARGING_BREAD.get());
+                enforceUniqueCurio(player, ModItems.GLASS_CLOTH.get());
+                enforceUniqueCurio(player, ModItems.GUARDIAN_GOLEM.get());
+                enforceUniqueCurio(player, ModItems.CAR_BOMB.get());
+                enforceUniqueCurio(player, ModItems.ENERGY_DRINK.get());
+                enforceUniqueCurio(player, ModItems.TIME_HOURGLASS.get());
+                enforceUniqueCurio(player, ModItems.SPONGE_RING.get());
+                enforceUniqueCurio(player, ModItems.VIPERS_EMBRACE.get());
+                enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
+                enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get());
+                enforceUniqueCurio(player, ModItems.SPIDER_BOOTS.get());
 
-            // 3. Egg of Gluttony
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EGG_OF_GLUTTONY.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 40, 0, true, false, true));
-            }
-
-            // 4. Scarlet Eyes
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SCARLET_EYES.get()).isPresent() && player.level().isNight()) {
-                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 210, 0, true, false, false));
-            }
-
-            // 5. Ignitor Shield
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.IGNITOR_SHIELD.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
-            }
-
-            // 6. Recharging Bread
-            var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());
-            if (breadOpt.isPresent()) {
-                ItemStack breadStack = breadOpt.get().stack();
-                CompoundTag nbt = breadStack.getOrCreateTag();
-
-                if (!nbt.contains("Charge")) {
-                    nbt.putInt("Charge", 1200);
+                // 1. Talisman of Intuition
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false, true));
                 }
 
-                int charge = nbt.getInt("Charge");
+                // 2. Golden Emerald
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GOLDEN_EMERALD.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false, true));
+                }
 
-                if (charge > 0) {
-                    charge--;
-                    player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 39, 0, true, false, false));
-                } else {
-                    int wheatSlot = -1;
-                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                        ItemStack invStack = player.getInventory().getItem(i);
-                        if (invStack.is(Items.WHEAT)) {
-                            wheatSlot = i;
-                            break;
+                // 3. Egg of Gluttony
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EGG_OF_GLUTTONY.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 40, 0, true, false, true));
+                }
+
+                // 4. Scarlet Eyes
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SCARLET_EYES.get()).isPresent() && player.level().isNight()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 210, 0, true, false, false));
+                }
+
+                // 5. Ignitor Shield
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.IGNITOR_SHIELD.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
+                }
+
+                // 6. Recharging Bread
+                var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());
+                if (breadOpt.isPresent()) {
+                    ItemStack breadStack = breadOpt.get().stack();
+                    CompoundTag nbt = breadStack.getOrCreateTag();
+
+                    if (!nbt.contains("Charge")) {
+                        nbt.putInt("Charge", 1200);
+                    }
+
+                    int charge = nbt.getInt("Charge");
+
+                    if (charge > 0) {
+                        charge--;
+                        player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 39, 0, true, false, false));
+                    } else {
+                        int wheatSlot = -1;
+                        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                            ItemStack invStack = player.getInventory().getItem(i);
+                            if (invStack.is(Items.WHEAT)) {
+                                wheatSlot = i;
+                                break;
+                            }
+                        }
+
+                        if (wheatSlot != -1) {
+                            player.getInventory().removeItem(wheatSlot, 1);
+                            charge = 1200;
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0F, 1.2F);
                         }
                     }
+                    nbt.putInt("Charge", charge);
+                }
 
-                    if (wheatSlot != -1) {
-                        player.getInventory().removeItem(wheatSlot, 1);
-                        charge = 1200;
-                        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                                SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0F, 1.2F);
+                // 7. Glass Cloth
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GLASS_CLOTH.get()).isPresent()) {
+                    boolean isInLiquid = player.isInWater() || player.isInLava() || player.isInFluidType();
+
+                    if (isInLiquid) {
+                        if (player.hasEffect(MobEffects.INVISIBILITY)) {
+                            player.removeEffect(MobEffects.INVISIBILITY);
+                        }
+                    } else {
+                        player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 39, 0, true, false, true));
                     }
                 }
-                nbt.putInt("Charge", charge);
-            }
 
-            // 7. Glass Cloth
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GLASS_CLOTH.get()).isPresent()) {
-                boolean isInLiquid = player.isInWater() || player.isInLava() || player.isInFluidType();
+                // 8. Guardian Golem
+                var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
+                if (golemOpt.isPresent()) {
+                    ItemStack golemStack = golemOpt.get().stack();
+                    CompoundTag nbt = golemStack.getOrCreateTag();
 
-                if (isInLiquid) {
-                    if (player.hasEffect(MobEffects.INVISIBILITY)) {
-                        player.removeEffect(MobEffects.INVISIBILITY);
+                    if (!nbt.contains("Uses")) {
+                        nbt.putInt("Uses", 2);
                     }
-                } else {
-                    player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 39, 0, true, false, true));
-                }
-            }
 
-            // 8. Guardian Golem
-            var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
-            if (golemOpt.isPresent()) {
-                ItemStack golemStack = golemOpt.get().stack();
-                CompoundTag nbt = golemStack.getOrCreateTag();
+                    if (nbt.contains("GolemTimer")) {
+                        int timer = nbt.getInt("GolemTimer");
+                        if (timer > 0) {
+                            timer--;
+                            nbt.putInt("GolemTimer", timer);
 
-                if (!nbt.contains("Uses")) {
-                    nbt.putInt("Uses", 2);
-                }
+                            if (nbt.contains("ActiveGolemUUID")) {
+                                try {
+                                    java.util.UUID uuid = nbt.getUUID("ActiveGolemUUID");
+                                    if (player.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                                        net.minecraft.world.entity.Entity entity = serverLevel.getEntity(uuid);
 
-                if (nbt.contains("GolemTimer")) {
-                    int timer = nbt.getInt("GolemTimer");
-                    if (timer > 0) {
-                        timer--;
-                        nbt.putInt("GolemTimer", timer);
-
-                        if (nbt.contains("ActiveGolemUUID")) {
-                            try {
-                                java.util.UUID uuid = nbt.getUUID("ActiveGolemUUID");
-                                if (player.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                                    net.minecraft.world.entity.Entity entity = serverLevel.getEntity(uuid);
-
-                                    if (entity instanceof IronGolem guardian) {
-                                        if (guardian.getTarget() == null) {
-                                            double distance = guardian.distanceTo(player);
-                                            if (distance > 16.0D) {
-                                                guardian.teleportTo(player.getX(), player.getY(), player.getZ());
-                                            } else if (distance > 4.0D) {
-                                                guardian.getNavigation().moveTo(player, 1.25D);
+                                        if (entity instanceof IronGolem guardian) {
+                                            if (guardian.getTarget() == null) {
+                                                double distance = guardian.distanceTo(player);
+                                                if (distance > 16.0D) {
+                                                    guardian.teleportTo(player.getX(), player.getY(), player.getZ());
+                                                } else if (distance > 4.0D) {
+                                                    guardian.getNavigation().moveTo(player, 1.25D);
+                                                }
                                             }
                                         }
-                                    }
 
-                                    if (timer == 0) {
-                                        if (entity != null) {
-                                            entity.discard();
+                                        if (timer == 0) {
+                                            if (entity != null) {
+                                                entity.discard();
+                                            }
+                                            nbt.remove("ActiveGolemUUID");
                                         }
-                                        nbt.remove("ActiveGolemUUID");
                                     }
-                                }
-                            } catch (Exception e) {}
+                                } catch (Exception e) {}
+                            }
+                        }
+                    }
+
+                    if (nbt.getInt("Uses") == 0) {
+                        int ironSlot = -1;
+                        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                            ItemStack invStack = player.getInventory().getItem(i);
+                            if (invStack.is(Items.IRON_INGOT)) {
+                                ironSlot = i;
+                                break;
+                            }
+                        }
+
+                        if (ironSlot != -1) {
+                            player.getInventory().removeItem(ironSlot, 1);
+                            nbt.putInt("Uses", 2);
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.IRON_GOLEM_REPAIR, SoundSource.PLAYERS, 1.0F, 1.0F);
                         }
                     }
                 }
 
-                if (nbt.getInt("Uses") == 0) {
-                    int ironSlot = -1;
-                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                        ItemStack invStack = player.getInventory().getItem(i);
-                        if (invStack.is(Items.IRON_INGOT)) {
-                            ironSlot = i;
-                            break;
-                        }
-                    }
+                // 9. Car Bomb
+                var bombOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.CAR_BOMB.get());
+                if (bombOpt.isPresent()) {
+                    ItemStack bombStack = bombOpt.get().stack();
+                    CompoundTag nbt = bombStack.getOrCreateTag();
 
-                    if (ironSlot != -1) {
-                        player.getInventory().removeItem(ironSlot, 1);
-                        nbt.putInt("Uses", 2);
-                        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                                SoundEvents.IRON_GOLEM_REPAIR, SoundSource.PLAYERS, 1.0F, 1.0F);
-                    }
-                }
-            }
-
-            // 9. Car Bomb
-            var bombOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.CAR_BOMB.get());
-            if (bombOpt.isPresent()) {
-                ItemStack bombStack = bombOpt.get().stack();
-                CompoundTag nbt = bombStack.getOrCreateTag();
-
-                if (!nbt.contains("Uses")) {
-                    nbt.putInt("Uses", 3);
-                }
-
-                if (nbt.getInt("Uses") == 0) {
-                    int tntSlot = -1;
-                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                        ItemStack invStack = player.getInventory().getItem(i);
-                        if (invStack.is(Items.TNT)) {
-                            tntSlot = i;
-                            break;
-                        }
-                    }
-
-                    if (tntSlot != -1) {
-                        player.getInventory().removeItem(tntSlot, 1);
+                    if (!nbt.contains("Uses")) {
                         nbt.putInt("Uses", 3);
-                        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                                SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.2F);
                     }
-                }
-            }
 
-            // 10. Energy Drink
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.ENERGY_DRINK.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.JUMP, 39, 0, true, false, true));
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 39, 0, true, false, true));
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 39, 0, true, false, true));
-            }
+                    if (nbt.getInt("Uses") == 0) {
+                        int tntSlot = -1;
+                        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                            ItemStack invStack = player.getInventory().getItem(i);
+                            if (invStack.is(Items.TNT)) {
+                                tntSlot = i;
+                                break;
+                            }
+                        }
 
-            // 11. Time Hourglass
-            var hourglassOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.TIME_HOURGLASS.get());
-            if (hourglassOpt.isPresent()) {
-                ItemStack stack = hourglassOpt.get().stack();
-                CompoundTag nbt = stack.getOrCreateTag();
-
-                if (!nbt.contains("Uses")) {
-                    nbt.putInt("Uses", 1);
-                }
-
-                if (nbt.getInt("Uses") == 0) {
-                    int sandSlot = -1;
-                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                        ItemStack invStack = player.getInventory().getItem(i);
-                        if (invStack.is(Items.SOUL_SAND)) {
-                            sandSlot = i;
-                            break;
+                        if (tntSlot != -1) {
+                            player.getInventory().removeItem(tntSlot, 1);
+                            nbt.putInt("Uses", 3);
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.TNT_PRIMED, SoundSource.PLAYERS, 1.0F, 1.2F);
                         }
                     }
+                }
 
-                    if (sandSlot != -1) {
-                        player.getInventory().removeItem(sandSlot, 1);
+                // 10. Energy Drink
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.ENERGY_DRINK.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.JUMP, 39, 0, true, false, true));
+                    player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 39, 0, true, false, true));
+                    player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 39, 0, true, false, true));
+                }
+
+                // 11. Time Hourglass
+                var hourglassOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.TIME_HOURGLASS.get());
+                if (hourglassOpt.isPresent()) {
+                    ItemStack stack = hourglassOpt.get().stack();
+                    CompoundTag nbt = stack.getOrCreateTag();
+
+                    if (!nbt.contains("Uses")) {
                         nbt.putInt("Uses", 1);
-                        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                                SoundEvents.SOUL_ESCAPE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    }
+
+                    if (nbt.getInt("Uses") == 0) {
+                        int sandSlot = -1;
+                        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                            ItemStack invStack = player.getInventory().getItem(i);
+                            if (invStack.is(Items.SOUL_SAND)) {
+                                sandSlot = i;
+                                break;
+                            }
+                        }
+
+                        if (sandSlot != -1) {
+                            player.getInventory().removeItem(sandSlot, 1);
+                            nbt.putInt("Uses", 1);
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.SOUL_ESCAPE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        }
                     }
                 }
-            }
 
-            // 12. Sponge Ring
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPONGE_RING.get()).isPresent()) {
-                Level level = player.level();
-                BlockPos playerPos = player.blockPosition();
-                int radius = 3;
+                // 12. Sponge Ring
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPONGE_RING.get()).isPresent()) {
+                    Level level = player.level();
+                    BlockPos playerPos = player.blockPosition();
+                    int radius = 3;
 
-                // Loop through all blocks in a 3-block radius and drain them
-                for (int x = -radius; x <= radius; x++) {
-                    for (int y = -radius; y <= radius; y++) {
-                        for (int z = -radius; z <= radius; z++) {
-                            BlockPos pos = playerPos.offset(x, y, z);
-                            BlockState state = level.getBlockState(pos);
+                    // Loop through all blocks in a 3-block radius and drain them
+                    for (int x = -radius; x <= radius; x++) {
+                        for (int y = -radius; y <= radius; y++) {
+                            for (int z = -radius; z <= radius; z++) {
+                                BlockPos pos = playerPos.offset(x, y, z);
+                                BlockState state = level.getBlockState(pos);
 
-                            if (state.getBlock() instanceof LiquidBlock || state.getBlock() instanceof BucketPickup) {
-                                if (state.getBlock() instanceof BucketPickup pickup) {
-                                    pickup.pickupBlock(level, pos, state);
-                                } else {
-                                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                                if (state.getBlock() instanceof LiquidBlock || state.getBlock() instanceof BucketPickup) {
+                                    if (state.getBlock() instanceof BucketPickup pickup) {
+                                        pickup.pickupBlock(level, pos, state);
+                                    } else {
+                                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // 13. Viper's Embrace
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
-                if (player.hasEffect(MobEffects.POISON)) {
-                    player.removeEffect(MobEffects.POISON);
-                }
-            }
-
-            // 14. Heart of Resolution
-            AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
-            UUID heartUuid = UUID.fromString("87a6c9e0-1c3a-4b9d-8c1d-123456789abc");
-
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.HEART_OF_RESOLUTION.get()).isPresent()) {
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 39, 0, true, false, true));
-
-                if (healthAttr != null && healthAttr.getModifier(heartUuid) == null) {
-                    healthAttr.addPermanentModifier(new AttributeModifier(heartUuid, "Heart of Resolution", 0.0D, AttributeModifier.Operation.ADDITION));
-                }
-            } else {
-                if (healthAttr != null && healthAttr.getModifier(heartUuid) != null) {
-                    healthAttr.removeModifier(heartUuid);
-
-                    if (player.getHealth() > player.getMaxHealth()) {
-                        player.setHealth(player.getMaxHealth());
+                // 13. Viper's Embrace
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.VIPERS_EMBRACE.get()).isPresent()) {
+                    if (player.hasEffect(MobEffects.POISON)) {
+                        player.removeEffect(MobEffects.POISON);
                     }
                 }
-            }
 
-            // 15. Warden Antennas
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.WARDEN_ANTENNAS.get()).isPresent()) {
-                // Create a 9x9x9 bounding box centered on the player
-                AABB searchArea = new AABB(
-                        player.getX() - 9.0D, player.getY() - 9.0D, player.getZ() - 9.0D,
-                        player.getX() + 9.0D, player.getY() + 9.0D, player.getZ() + 9.0D
-                );
+                // 14. Heart of Resolution
+                AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
+                UUID heartUuid = UUID.fromString("87a6c9e0-1c3a-4b9d-8c1d-123456789abc");
 
-                // Find all living entities in range, excluding the player using the talisman
-                List<LivingEntity> entitiesInRange = player.level().getEntitiesOfClass(
-                        LivingEntity.class,
-                        searchArea,
-                        entity -> entity != player // Exclude the user, but this will affect other players
-                );
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.HEART_OF_RESOLUTION.get()).isPresent()) {
+                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 39, 0, true, false, true));
 
-                for (LivingEntity entity : entitiesInRange) {
-                    entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false, true));
-                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, true, false, true));
+                    if (healthAttr != null && healthAttr.getModifier(heartUuid) == null) {
+                        healthAttr.addPermanentModifier(new AttributeModifier(heartUuid, "Heart of Resolution", 0.0D, AttributeModifier.Operation.ADDITION));
+                    }
+                } else {
+                    if (healthAttr != null && healthAttr.getModifier(heartUuid) != null) {
+                        healthAttr.removeModifier(heartUuid);
+
+                        if (player.getHealth() > player.getMaxHealth()) {
+                            player.setHealth(player.getMaxHealth());
+                        }
+                    }
                 }
-            }
 
-            // 16. Spider Boots - Arrampicarsi sui muri
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
-                if (player.horizontalCollision) {
-                    player.setDeltaMovement(player.getDeltaMovement().x, 0.2D, player.getDeltaMovement().z);
-                    player.fallDistance = 0.0F; // Previene i danni da caduta accumulati durante l'arrampicata
+                // 15. Warden Antennas
+                if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.WARDEN_ANTENNAS.get()).isPresent()) {
+                    AABB searchArea = new AABB(
+                            player.getX() - 9.0D, player.getY() - 9.0D, player.getZ() - 9.0D,
+                            player.getX() + 9.0D, player.getY() + 9.0D, player.getZ() + 9.0D
+                    );
+
+                    List<LivingEntity> entitiesInRange = player.level().getEntitiesOfClass(
+                            LivingEntity.class,
+                            searchArea,
+                            entity -> entity != player
+                    );
+
+                    for (LivingEntity entity : entitiesInRange) {
+                        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false, true));
+                        entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200, 0, true, false, true));
+                    }
                 }
             }
         }
@@ -488,21 +489,20 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
-        // Spider Boots - Immunità al danno da caduta
         if (event.getEntity() instanceof Player player) {
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
-                event.setCanceled(true); // Cancella l'evento, nessun danno verrà applicato
+                event.setCanceled(true);
             }
         }
     }
 
     @SubscribeEvent
     public static void onPlaySoundAtEntity(PlayLevelSoundEvent.AtEntity event) {
-        // Spider Boots - Passi completamente silenziosi
+        // Spider Boots - Passi silenziosi aggiornati per Forge 1.20
         if (event.getEntity() instanceof Player player) {
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
-                if (event.getSound() != null && event.getSound().value().getLocation().getPath().contains("step")) {
-                    event.setCanceled(true); // Cancella la riproduzione del suono dei passi
+                if (event.getSound() != null && event.getSound().value() != null && event.getSound().value().getLocation().getPath().contains("step")) {
+                    event.setCanceled(true); // Cancella i suoni contenenti la dicitura "step"
                 }
             }
         }
@@ -536,25 +536,20 @@ public class ModEvents {
         }
     }
 
-    // 1) Cancel the player's jumping action if hit by Time Stop
     @SubscribeEvent
     public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
             MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
             if (slowness != null && slowness.getAmplifier() >= 4) {
-                // Completely cancel the jump by setting the y velocity to 0
                 event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
             }
         }
     }
 
-    // 2) Completely disable client-side WASD controls for those affected by Time Stop
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onMovementInput(MovementInputUpdateEvent event) {
-            // If the entity (player) has Slowness level 5 (amplifier 4) or higher,
-            // forcefully disable movement input (WASD, jump, shift)
             if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                 MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 if (slowness != null && slowness.getAmplifier() >= 4) {
