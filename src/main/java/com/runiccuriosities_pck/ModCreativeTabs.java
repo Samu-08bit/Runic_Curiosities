@@ -38,6 +38,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.WARDEN_ANTENNAS.get());
                         pOutput.accept(ModItems.SPIDER_BOOTS.get());
                         pOutput.accept(ModItems.FAIRY_WINGS.get());
+                        pOutput.accept(ModItems.NEPTUNES_HELMET.get());
                     })
                     .build());
 

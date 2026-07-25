@@ -1,0 +1,20 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "runic_curiosities:item/neptunes_helmet_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "runic_curiosities:anim_state": 0.1
+      },
+      "model": "runic_curiosities:item/neptunes_helmet_1"
+    },
+    {
+      "predicate": {
+        "runic_curiosities:anim_state": 0.9
+      },
+      "model": "runic_curiosities:item/neptunes_helmet_2"
+    }
+  ]
+}

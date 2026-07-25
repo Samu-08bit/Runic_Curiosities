@@ -9,10 +9,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +39,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,15 +59,15 @@ public class ModEvents {
         if (event.phase == TickEvent.Phase.END) {
             Player player = event.player;
 
-            // 16. Spider Boots - Arrampicarsi sui muri (Eseguito sia su client che server per un movimento fluido)
+            // 16. Spider Boots - (Client & Server)
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
                 if (player.horizontalCollision) {
                     player.setDeltaMovement(player.getDeltaMovement().x, 0.2D, player.getDeltaMovement().z);
-                    player.fallDistance = 0.0F; // Previene i danni da caduta accumulati durante l'arrampicata
+                    player.fallDistance = 0.0F;
                 }
             }
 
-            // Solo lato server per la logica principale
+            // Solo lato server per la logica principale degli oggetti
             if (!player.level().isClientSide) {
                 enforceUniqueCurio(player, ModItems.EXAMPLE_ITEM.get());
                 enforceUniqueCurio(player, ModItems.GOLDEN_EMERALD.get());
@@ -86,7 +85,8 @@ public class ModEvents {
                 enforceUniqueCurio(player, ModItems.HEART_OF_RESOLUTION.get());
                 enforceUniqueCurio(player, ModItems.WARDEN_ANTENNAS.get());
                 enforceUniqueCurio(player, ModItems.SPIDER_BOOTS.get());
-                enforceUniqueCurio(player, ModItems.FAIRY_WINGS.get()); // Added Fairy Wings
+                enforceUniqueCurio(player, ModItems.FAIRY_WINGS.get());
+                enforceUniqueCurio(player, ModItems.NEPTUNES_HELMET.get());
 
                 // 1. Talisman of Intuition
                 if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
@@ -296,7 +296,6 @@ public class ModEvents {
                     BlockPos playerPos = player.blockPosition();
                     int radius = 3;
 
-                    // Loop through all blocks in a 3-block radius and drain them
                     for (int x = -radius; x <= radius; x++) {
                         for (int y = -radius; y <= radius; y++) {
                             for (int z = -radius; z <= radius; z++) {
@@ -371,11 +370,48 @@ public class ModEvents {
                         player.onUpdateAbilities();
                     }
                 } else {
-                    // Controlliamo che il giocatore non sia in creativa o spettatore per togliergli il volo in sicurezza
                     if (!player.isCreative() && !player.isSpectator() && player.getAbilities().mayfly) {
                         player.getAbilities().mayfly = false;
                         player.getAbilities().flying = false;
                         player.onUpdateAbilities();
+                    }
+                }
+
+                // 18. Neptune's Helmet - Logica poteri acqua (Server)
+                var neptuneAnimOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.NEPTUNES_HELMET.get());
+                if (neptuneAnimOpt.isPresent()) {
+                    ItemStack stack = neptuneAnimOpt.get().stack();
+                    CompoundTag nbt = stack.getOrCreateTag();
+
+                    if (!nbt.contains("WaterTicks")) {
+                        nbt.putInt("WaterTicks", 12000);
+                    }
+
+                    int waterTicks = nbt.getInt("WaterTicks");
+
+                    if (player.isUnderWater() || player.isInWater()) {
+                        if (waterTicks > 0) {
+                            waterTicks--;
+                            player.addEffect(new MobEffectInstance(MobEffects.CONDUIT_POWER, 100, 0, true, false, true));
+                            player.addEffect(new MobEffectInstance(MobEffects.DOLPHINS_GRACE, 100, 0, true, false, true));
+                        } else {
+                            int crystalSlot = -1;
+                            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                                ItemStack invStack = player.getInventory().getItem(i);
+                                if (invStack.is(Items.PRISMARINE_CRYSTALS)) {
+                                    crystalSlot = i;
+                                    break;
+                                }
+                            }
+
+                            if (crystalSlot != -1) {
+                                player.getInventory().removeItem(crystalSlot, 1);
+                                waterTicks = 12000;
+                                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                        SoundEvents.CONDUIT_ACTIVATE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                            }
+                        }
+                        nbt.putInt("WaterTicks", waterTicks);
                     }
                 }
             }
@@ -517,11 +553,10 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlaySoundAtEntity(PlayLevelSoundEvent.AtEntity event) {
-        // Spider Boots - Passi silenziosi aggiornati per Forge 1.20
         if (event.getEntity() instanceof Player player) {
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SPIDER_BOOTS.get()).isPresent()) {
                 if (event.getSound() != null && event.getSound().value() != null && event.getSound().value().getLocation().getPath().contains("step")) {
-                    event.setCanceled(true); // Cancella i suoni contenenti la dicitura "step"
+                    event.setCanceled(true);
                 }
             }
         }
