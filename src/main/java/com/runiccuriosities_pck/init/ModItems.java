@@ -22,7 +22,7 @@ public class ModItems {
             () -> new Item(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> IGNITOR_SHIELD = ITEMS.register("ignitor_shield",
-            () -> new Item(new Item.Properties().stacksTo(1)));
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant()));
 
     public static final RegistryObject<Item> RECHARGING_BREAD = ITEMS.register("recharging_bread",
             () -> new RechargingBreadItem(new Item.Properties().stacksTo(1)));

@@ -66,10 +66,10 @@ public class ModCommands {
             // Manda l'animazione del cubo arcobaleno ai client
             ModMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new PacketSyncTimeFreeze(pos.x, pos.y, pos.z));
 
-            source.sendSuccess(() -> Component.literal("Timestop attivato! Il tempo si e' fermato."), true);
+            source.sendSuccess(() -> Component.literal("Time stop activated! Time has stopped."), true);
             return 1;
         } else {
-            source.sendFailure(Component.literal("Solo un giocatore puo' usare questo comando!"));
+            source.sendFailure(Component.literal("Only one player can use this command!"));
             return 0;
         }
     }
