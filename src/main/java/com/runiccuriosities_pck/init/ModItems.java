@@ -63,4 +63,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> NEPTUNES_HELMET = ITEMS.register("neptunes_helmet",
             () -> new NeptunesHelmetItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> RANDOM_CAULDRON = ITEMS.register("random_cauldron",
+            () -> new RandomCauldronItem());
 }
