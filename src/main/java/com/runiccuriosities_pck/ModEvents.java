@@ -94,6 +94,7 @@ public class ModEvents {
                 enforceUniqueCurio(player, ModItems.FAIRY_WINGS.get());
                 enforceUniqueCurio(player, ModItems.NEPTUNES_HELMET.get());
                 enforceUniqueCurio(player, ModItems.RANDOM_CAULDRON.get());
+                enforceUniqueCurio(player, ModItems.WARDEN_BEAM.get());
 
                 // 1. Talisman of Intuition
                 if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.EXAMPLE_ITEM.get()).isPresent()) {
