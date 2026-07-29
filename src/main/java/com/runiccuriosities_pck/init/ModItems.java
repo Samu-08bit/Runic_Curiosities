@@ -70,4 +70,6 @@ public class ModItems {
     public static final RegistryObject<Item> WARDEN_BEAM = ITEMS.register("warden_beam",
             () -> new WardenBeamItem());
 
+    public static final RegistryObject<Item> SAVIRITIUM_COMPOUND = ITEMS.register("saviritium_compound",
+            () -> new Item(new Item.Properties().stacksTo(16)));
 }

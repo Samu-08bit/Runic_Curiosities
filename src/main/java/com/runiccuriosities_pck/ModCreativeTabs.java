@@ -16,8 +16,8 @@ public class ModCreativeTabs {
     // Creiamo e configuriamo la nostra tab personalizzata
     public static final RegistryObject<CreativeModeTab> RUNIC_CURIOSITIES_TAB = CREATIVE_MODE_TABS.register("runic_curiosities_tab",
             () -> CreativeModeTab.builder()
-                    // L'icona che verrà mostrata nella tab in alto (ho messo la clessidra, ma puoi usare quello che vuoi)
-                    .icon(() -> new ItemStack(ModItems.TIME_HOURGLASS.get()))
+                    // L'icona
+                    .icon(() -> new ItemStack(ModItems.SAVIRITIUM_COMPOUND.get()))
                     .title(Component.translatable("creativetab.runic_curiosities_tab"))
                     .displayItems((pParameters, pOutput) -> {
                         // Aggiungiamo tutti gli oggetti della mod in questa tab
@@ -41,6 +41,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.NEPTUNES_HELMET.get());
                         pOutput.accept(ModItems.RANDOM_CAULDRON.get());
                         pOutput.accept(ModItems.WARDEN_BEAM.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
                     })
                     .build());
 
