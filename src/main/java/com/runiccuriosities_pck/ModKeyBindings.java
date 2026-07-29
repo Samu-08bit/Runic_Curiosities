@@ -17,8 +17,16 @@ public class ModKeyBindings {
             "key.categories.runic_curiosities"
     );
 
+    public static final KeyMapping WARDEN_BEAM_KEY = new KeyMapping(
+            "key.runic_curiosities.warden_beam",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            "key.categories.runic_curiosities"
+    );
+
     @SubscribeEvent
     public static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(FREEZE_TIME_KEY);
+        event.register(WARDEN_BEAM_KEY);
     }
 }

@@ -66,4 +66,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> RANDOM_CAULDRON = ITEMS.register("random_cauldron",
             () -> new RandomCauldronItem());
+
+    public static final RegistryObject<Item> WARDEN_BEAM = ITEMS.register("warden_beam",
+            () -> new WardenBeamItem());
+
 }

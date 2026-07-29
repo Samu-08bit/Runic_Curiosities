@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +20,15 @@ public class ClientModEvents {
     // 1. Bus FORGE: Per gli eventi "in-game" (es. overlay rosso sullo schermo)
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientForgeEvents {
+
+        @SubscribeEvent
+        public static void onKeyInput(InputEvent.Key event) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.screen == null && ModKeyBindings.WARDEN_BEAM_KEY.consumeClick()) {
+                PacketHandler.INSTANCE.sendToServer(new WardenBeamPacket());
+            }
+        }
+
         @SubscribeEvent
         public static void onRenderGuiOverlay(RenderGuiOverlayEvent.Pre event) {
             if (event.getOverlay().id().equals(VanillaGuiOverlay.VIGNETTE.id())) {
