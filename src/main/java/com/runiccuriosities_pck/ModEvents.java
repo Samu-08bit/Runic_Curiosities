@@ -24,6 +24,12 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.InteractionResult;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.resources.ResourceLocation;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -524,6 +530,54 @@ public class ModEvents {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+        ItemStack stack = event.getItemStack();
+
+        if (stack.isEmpty()) return;
+
+        // Controlliamo se l'item appartiene alla nostra mod
+        ResourceLocation regName = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (regName != null && regName.getNamespace().equals(RunicCuriosities.MODID)) {
+            // Usiamo un flag per sapere se è stato equipaggiato
+            boolean[] equipped = {false};
+
+            CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
+                for (java.util.Map.Entry<String, ICurioStacksHandler> entry : handler.getCurios().entrySet()) {
+                    if (equipped[0]) break;
+
+                    String slotType = entry.getKey();
+                    // Controlliamo se l'item ha il tag corretto per questo slot
+                    net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tagKey = net.minecraft.tags.ItemTags.create(new ResourceLocation("curios", slotType));
+                    if (stack.is(tagKey)) {
+                        IDynamicStackHandler stackHandler = entry.getValue().getStacks();
+                        for (int i = 0; i < stackHandler.getSlots(); i++) {
+                            if (stackHandler.getStackInSlot(i).isEmpty()) {
+                                if (!player.level().isClientSide()) {
+                                    // Equipaggiamo l'item
+                                    stackHandler.setStackInSlot(i, stack.copy());
+                                    stack.shrink(1); // Rimuoviamo dalla mano
+
+                                    // Riproduciamo il suono di equipaggiamento
+                                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                            net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+                                }
+                                equipped[0] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (equipped[0]) {
+                event.setCanceled(true);
+                event.setCancellationResult(InteractionResult.SUCCESS);
             }
         }
     }
