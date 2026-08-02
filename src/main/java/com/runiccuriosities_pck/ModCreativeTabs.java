@@ -9,18 +9,16 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModCreativeTabs {
-    // Creiamo il registro per la tab della creativa
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, RunicCuriosities.MODID);
 
-    // Creiamo e configuriamo la nostra tab personalizzata
     public static final RegistryObject<CreativeModeTab> RUNIC_CURIOSITIES_TAB = CREATIVE_MODE_TABS.register("runic_curiosities_tab",
             () -> CreativeModeTab.builder()
-                    // L'icona
                     .icon(() -> new ItemStack(ModItems.SAVIRITIUM_COMPOUND.get()))
                     .title(Component.translatable("creativetab.runic_curiosities_tab"))
                     .displayItems((pParameters, pOutput) -> {
-                        // Aggiungiamo tutti gli oggetti della mod in questa tab
+                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND_BLOCK_ITEM.get());
                         pOutput.accept(ModItems.EXAMPLE_ITEM.get());
                         pOutput.accept(ModItems.GOLDEN_EMERALD.get());
                         pOutput.accept(ModItems.EGG_OF_GLUTTONY.get());
@@ -34,18 +32,21 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.TIME_HOURGLASS.get());
                         pOutput.accept(ModItems.SPONGE_RING.get());
                         pOutput.accept(ModItems.VIPERS_EMBRACE.get());
-                        pOutput.accept(ModItems.HEART_OF_RESOLUTION.get());
+
+                        ItemStack heartStack = new ItemStack(ModItems.HEART_OF_RESOLUTION.get());
+                        heartStack.enchant(net.minecraft.world.item.enchantment.Enchantments.BINDING_CURSE, 1);
+                        pOutput.accept(heartStack);
+
                         pOutput.accept(ModItems.WARDEN_ANTENNAS.get());
                         pOutput.accept(ModItems.SPIDER_BOOTS.get());
                         pOutput.accept(ModItems.FAIRY_WINGS.get());
                         pOutput.accept(ModItems.NEPTUNES_HELMET.get());
                         pOutput.accept(ModItems.RANDOM_CAULDRON.get());
                         pOutput.accept(ModItems.WARDEN_BEAM.get());
-                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
+
                     })
                     .build());
 
-    // Metodo per registrare i tab nel bus principale del gioco
     public static void register(IEventBus eventBus) {
         CREATIVE_MODE_TABS.register(eventBus);
     }

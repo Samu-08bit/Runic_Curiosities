@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "runic_curiosities:saviritium_compound_block"
+    }
+  ],
+  "result": {
+    "item": "runic_curiosities:saviritium_compound",
+    "count": 4
+  }
+}

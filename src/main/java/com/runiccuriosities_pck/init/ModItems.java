@@ -1,5 +1,6 @@
 package com.runiccuriosities_pck;
 
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -45,7 +46,6 @@ public class ModItems {
     public static final RegistryObject<Item> SPONGE_RING = ITEMS.register("sponge_ring",
             () -> new Item(new Item.Properties().stacksTo(1)));
 
-    // Viper's Embrace
     public static final RegistryObject<Item> VIPERS_EMBRACE = ITEMS.register("vipers_embrace",
             () -> new Item(new Item.Properties().stacksTo(1)));
 
@@ -72,4 +72,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> SAVIRITIUM_COMPOUND = ITEMS.register("saviritium_compound",
             () -> new Item(new Item.Properties().stacksTo(16)));
+
+    public static final RegistryObject<Item> SAVIRITIUM_COMPOUND_BLOCK_ITEM = ITEMS.register("saviritium_compound_block",
+            () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16)));
 }
