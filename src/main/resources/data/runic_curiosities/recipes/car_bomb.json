@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "GIB",
+    "TTT"
+  ],
+  "key": {
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "B": {
+      "item": "minecraft:bow"
+    },
+    "T": {
+      "item": "minecraft:tnt_minecart"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:car_bomb",
+    "count": 1
+  }
+}

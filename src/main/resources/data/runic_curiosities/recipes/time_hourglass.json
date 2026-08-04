@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ESE",
+    "BDB",
+    "VSV"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:end_crystal"
+    },
+    "S": {
+      "item": "minecraft:soul_sand"
+    },
+    "B": {
+      "item": "minecraft:glass_bottle"
+    },
+    "D": {
+      "item": "minecraft:dragon_egg"
+    },
+    "V": {
+      "item": "runic_curiosities:saviritium_compound_block"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:time_hourglass",
+    "count": 1
+  }
+}

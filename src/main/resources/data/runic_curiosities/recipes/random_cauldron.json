@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "GBG",
+    "CPC"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "G": {
+      "item": "minecraft:ghast_tear"
+    },
+    "B": {
+      "item": "runic_curiosities:saviritium_compound_block"
+    },
+    "C": {
+      "item": "minecraft:cauldron"
+    },
+    "P": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:random_cauldron",
+    "count": 1
+  }
+}

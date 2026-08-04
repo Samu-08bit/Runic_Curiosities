@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PGE",
+    "GSG",
+    "GGP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:poisonous_potato"
+    },
+    "G": {
+      "item": "minecraft:gold_nugget"
+    },
+    "E": {
+      "item": "minecraft:emerald_block"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:vipers_embrace",
+    "count": 1
+  }
+}

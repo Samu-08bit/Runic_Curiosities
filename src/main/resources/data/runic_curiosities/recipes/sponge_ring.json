@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "CSC",
+    " I "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:sponge"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:sponge_ring",
+    "count": 1
+  }
+}

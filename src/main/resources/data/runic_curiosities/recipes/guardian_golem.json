@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "DBI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "D": {
+      "item": "minecraft:dandelion"
+    },
+    "B": {
+      "item": "runic_curiosities:saviritium_compound_block"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:guardian_golem",
+    "count": 1
+  }
+}

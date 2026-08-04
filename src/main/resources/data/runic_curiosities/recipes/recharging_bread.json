@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GCL",
+    "CBC",
+    "SCG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:yellow_dye"
+    },
+    "C": {
+      "item": "minecraft:cyan_dye"
+    },
+    "L": {
+      "item": "minecraft:lightning_rod"
+    },
+    "B": {
+      "item": "minecraft:bread"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:recharging_bread",
+    "count": 1
+  }
+}
