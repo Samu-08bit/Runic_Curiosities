@@ -1,5 +1,9 @@
 package com.runiccuriosities_pck;
 
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.item.ItemEntity;
+import java.util.Random;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -652,6 +656,17 @@ public class ModEvents {
             MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
             if (slowness != null && slowness.getAmplifier() >= 4) {
                 event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDrops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof Warden) {
+            // 20% di possibilita
+            if (new Random().nextFloat() < 0.20f) {
+                ItemEntity drop = new ItemEntity(event.getEntity().level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), new ItemStack(ModItems.WARDEN_BEAM.get()));
+                event.getDrops().add(drop);
             }
         }
     }
