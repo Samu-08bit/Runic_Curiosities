@@ -31,7 +31,10 @@ public class RunicCuriosities {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         // Registers networking pipeline for packet handling
-        event.enqueueWork(PacketHandler::register);
+        event.enqueueWork(() -> {
+            PacketHandler.register();
+            ModMessages.register();
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
