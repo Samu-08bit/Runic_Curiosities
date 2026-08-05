@@ -19,6 +19,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import java.awt.Color;
 
 public class ClientModEvents {
 
@@ -78,7 +81,9 @@ public class ClientModEvents {
                             event.getToolTip().add(Component.literal("Infinite Haste I, Speed I, and Jump Boost I.").withStyle(ChatFormatting.GRAY));
                             break;
                         case "time_hourglass":
-                            event.getToolTip().add(Component.literal("Freezes time in an area for 15 seconds (keybind). 3 min cooldown, recharges with Soul Sand.").withStyle(ChatFormatting.GRAY));
+                            long time = System.currentTimeMillis();
+                            int rgb = Color.HSBtoRGB((time % 2000L) / 2000.0f, 1.0f, 1.0f);
+                            event.getToolTip().add(Component.literal("Freezes time in an area for 15 seconds (keybind). 3 min cooldown, recharges with Soul Sand.").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb))));
                             break;
                         case "sponge_ring":
                             event.getToolTip().add(Component.literal("Continuously drains liquids in a 4-block radius.").withStyle(ChatFormatting.GRAY));
