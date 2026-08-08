@@ -4,30 +4,30 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class RechargingBreadItem extends Item {
+public class RechargingBreadItem extends TalismanItem {
     public RechargingBreadItem(Properties properties) {
         super(properties);
     }
 
-    // Forza il gioco a mostrare la barra di scaricamento
+    // Forces the game to show the durability/discharge bar
     @Override
     public boolean isBarVisible(ItemStack stack) {
         return true;
     }
 
-    // Calcola la larghezza della barra (da 0 a 13 pixel nel motore grafico di Minecraft)
+    // Calculates the bar width (from 0 to 13 pixels in the Minecraft engine)
     @Override
     public int getBarWidth(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("Charge")) {
             int charge = tag.getInt("Charge");
-            // 1200 è la carica massima (1 minuto)
+            // 1200 is the maximum charge (1 minute)
             return Math.round((float) charge * 13.0F / 1200.0F);
         }
         return 13;
     }
 
-    // Imposta il colore della barra (un bell'arancione/oro stile pane)
+    // Sets the bar color (a nice orange/gold bread style)
     @Override
     public int getBarColor(ItemStack stack) {
         return 0xFFAA00;

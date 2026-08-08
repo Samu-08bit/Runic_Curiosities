@@ -1,10 +1,9 @@
 package com.runiccuriosities_pck;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class CarBombItem extends Item {
+public class CarBombItem extends TalismanItem {
     public CarBombItem(Properties properties) {
         super(properties);
     }

@@ -1,10 +1,9 @@
 package com.runiccuriosities_pck;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class GuardianGolemItem extends Item {
+public class GuardianGolemItem extends TalismanItem {
     public GuardianGolemItem(Properties properties) {
         super(properties);
     }

@@ -10,13 +10,13 @@ import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-public class NeptunesHelmetItem extends Item implements ICurioItem {
+public class NeptunesHelmetItem extends TalismanItem implements ICurioItem {
 
     public NeptunesHelmetItem(Properties properties) {
         super(properties);
     }
 
-    // 1. Tick quando è nel normale inventario del giocatore
+    // 1. Tick when it is in the player's normal inventory
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (entity instanceof Player player) {
@@ -24,7 +24,7 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
         }
     }
 
-    // 2. Tick quando è equipaggiato nello slot di Curios
+    // 2. Tick when it is equipped in the Curios slot
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (slotContext.entity() instanceof Player player) {
@@ -32,14 +32,14 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
         }
     }
 
-    // 3. Tick quando è droppato a terra come entità
+    // 3. Tick when it is dropped on the ground as an entity
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         updateAnimation(stack, entity.isInWater() || entity.isUnderWater() || entity.isInLava() || entity.isInFluidType());
-        return false; // Ritorna false per far continuare i normali calcoli fisici
+        return false; // Returns false to let normal physics calculations continue
     }
 
-    // Logica centralizzata che gestisce la transizione dell'NBT
+    // Centralized logic that handles the NBT transition
     private void updateAnimation(ItemStack stack, boolean inLiquid) {
         CompoundTag nbt = stack.getOrCreateTag();
         int animState = nbt.contains("AnimState") ? nbt.getInt("AnimState") : 0;
@@ -48,7 +48,7 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
         if (inLiquid) {
             if (animState < 2) {
                 animTick++;
-                if (animTick >= 4) { // Cambia frame
+                if (animTick >= 4) { // Change frame
                     animState++;
                     animTick = 0;
                 }
@@ -58,7 +58,7 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
         } else {
             if (animState > 0) {
                 animTick++;
-                if (animTick >= 4) { // Cambia frame
+                if (animTick >= 4) { // Change frame
                     animState--;
                     animTick = 0;
                 }
@@ -70,11 +70,11 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
         nbt.putInt("AnimTick", animTick);
     }
 
-    // --- LOGICA BARRA DURABILITÀ (CARICA ACQUA) ---
+    // --- DURABILITY BAR LOGIC (WATER CHARGE) ---
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        // Mostra la barra solo se il tag "WaterTicks" esiste
+        // Shows the bar only if the "WaterTicks" tag exists
         return stack.hasTag() && stack.getTag().contains("WaterTicks");
     }
 
@@ -82,7 +82,7 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
     public int getBarWidth(ItemStack stack) {
         if (stack.hasTag() && stack.getTag().contains("WaterTicks")) {
             int waterTicks = stack.getTag().getInt("WaterTicks");
-            // 12000 è il massimo (10 minuti), 13.0F è la larghezza massima della barra in Minecraft
+            // 12000 is the maximum (10 minutes), 13.0F is the maximum width of the bar in Minecraft
             return Math.round((float) waterTicks * 13.0F / 12000.0F);
         }
         return 13;
@@ -90,6 +90,6 @@ public class NeptunesHelmetItem extends Item implements ICurioItem {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return 0x00AADD; // Colore azzurro/blu che si addice all'elmo di Nettuno
+        return 0x00AADD; // Light blue/cyan color that suits Neptune's helmet
     }
 }

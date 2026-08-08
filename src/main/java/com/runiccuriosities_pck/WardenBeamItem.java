@@ -19,12 +19,12 @@ import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 
-public class WardenBeamItem extends Item implements ICurioItem {
+public class WardenBeamItem extends TalismanItem implements ICurioItem {
 
-    private static final int MAX_COOLDOWN = 600; // 30 secondi (30 * 20 ticks)
+    private static final int MAX_COOLDOWN = 600; // 30 seconds (30 * 20 ticks)
 
     public WardenBeamItem() {
-        // Impostiamo la durabilità di base in modo da far funzionare la barra del cooldown
+        // Set the base durability to make the cooldown bar work
         super(new Item.Properties().stacksTo(1).defaultDurability(MAX_COOLDOWN));
     }
 
@@ -41,7 +41,7 @@ public class WardenBeamItem extends Item implements ICurioItem {
         }
     }
 
-    // Viene chiamato dal pacchetto di rete quando il giocatore preme il tasto
+    // Called from the network packet when the player presses the key
     public static void tryShootBeam(Player player) {
         if (player.level().isClientSide()) return;
 
@@ -54,7 +54,7 @@ public class WardenBeamItem extends Item implements ICurioItem {
                     tag.putInt("BeamCooldown", MAX_COOLDOWN);
                     stack.setDamageValue(MAX_COOLDOWN);
 
-                    // Applico gli effetti negativi: Slowness III per 15 sec, Weakness I per 20 sec
+                    // Apply negative effects: Slowness III for 15 sec, Weakness I for 20 sec
                     player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 15 * 20, 2, true, false, true));
                     player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 20, 0, true, false, true));
                 }
@@ -63,26 +63,26 @@ public class WardenBeamItem extends Item implements ICurioItem {
     }
 
     private static void shootBeam(ServerLevel level, Player player) {
-        Vec3 startPos = player.position().add(0, 1.6f, 0); // Altezza del petto circa
+        Vec3 startPos = player.position().add(0, 1.6f, 0); // Chest height roughly
         Vec3 look = player.getLookAngle();
-        double distance = 15.0; // Distanza massima del raggio
+        double distance = 15.0; // Maximum beam distance
         Vec3 endPos = startPos.add(look.scale(distance));
 
-        // Suono del sonic boom
+        // Sonic boom sound
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 3.0F, 1.0F);
 
-        // Effetti visivi (particelle Sonic Boom lungo la traiettoria)
+        // Visual effects (Sonic Boom particles along the trajectory)
         for (int i = 1; i < Math.floor(distance) * 2; ++i) {
             Vec3 particlePos = startPos.add(look.scale((double) i * 0.5));
             level.sendParticles(ParticleTypes.SONIC_BOOM, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
         }
 
-        // Danno e knockback che bypassano l'armatura
+        // Damage and knockback that bypasses armor
         AABB hitBox = new AABB(startPos, endPos).inflate(2.0D);
         List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, hitBox, e -> e != player && e.isAlive());
 
         for (LivingEntity target : targets) {
-            // Controlla se l'entità è vicina al centro del raggio
+            // Check if the entity is close to the center of the beam
             Vec3 targetPos = target.position().add(0, target.getBbHeight() / 2, 0);
             double distToLine = targetPos.subtract(startPos).cross(look).length();
             if (distToLine < 1.5) {
@@ -112,6 +112,6 @@ public class WardenBeamItem extends Item implements ICurioItem {
 
     @Override
     public int getBarColor(ItemStack stack) {
-        return 0x00FF00; // Verde, puoi cambiarlo se preferisci un altro colore
+        return 0x00FF00; // Green, you can change it if you prefer another color
     }
 }

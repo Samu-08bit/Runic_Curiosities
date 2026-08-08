@@ -23,31 +23,31 @@ public class HeartOfResolutionItem extends Item implements ICurioItem {
         super(properties);
     }
 
-    // Tick quando è nel normale inventario del giocatore (o appena preso)
+    // Tick when it is in the player's normal inventory (or just picked up)
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        // Aggiunge la Maledizione del Legame automaticamente se non ce l'ha
+        // Automatically adds Curse of Binding if it doesn't have it
         if (!level.isClientSide && stack.getEnchantmentLevel(Enchantments.BINDING_CURSE) == 0) {
             stack.enchant(Enchantments.BINDING_CURSE, 1);
         }
         super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
-    // Questo metodo sostituisce il ModEvents "onPlayerTick" per questo specifico oggetto
+    // This method replaces the ModEvents "onPlayerTick" for this specific item
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         if (slotContext.entity() != null && !slotContext.entity().level().isClientSide()) {
-            // Aggiunge Resistance 1 (amplifier 0) in modo costante
+            // Constantly adds Resistance 1 (amplifier 0)
             slotContext.entity().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, true, false, true));
         }
     }
 
-    // Questo metodo gestisce attributi fissi (come Salute Max, Velocità, Armatura)
+    // This method handles fixed attributes (like Max Health, Speed, Armor)
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
 
-        // 10 cuori rossi = 20.0 punti salute base (Operation.ADDITION somma i punti fissi)
+        // 10 red hearts = 20.0 base health points (Operation.ADDITION adds fixed points)
         modifiers.put(Attributes.MAX_HEALTH,
                 new AttributeModifier(uuid, "Heart of Resolution Max Health", 20.0, AttributeModifier.Operation.ADDITION));
 

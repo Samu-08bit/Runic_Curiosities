@@ -17,9 +17,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.ArrayList;
 
-public class RandomCauldronItem extends Item implements ICurioItem {
+public class RandomCauldronItem extends TalismanItem implements ICurioItem {
 
-    // 3 minuti in tick (20 tick * 60 secondi * 3 = 3600)
+    // 3 minutes in ticks (20 ticks * 60 seconds * 3 = 3600)
     private static final int MAX_COOLDOWN = 3600;
 
     public RandomCauldronItem() {
@@ -39,21 +39,21 @@ public class RandomCauldronItem extends Item implements ICurioItem {
         CompoundTag tag = stack.getOrCreateTag();
         int timer = tag.getInt("CauldronTimer");
 
-        // Se il talismano è scarico (durabilità a 0 = damage a 1)
+        // If the talisman is discharged (durability at 0 = damage at 1)
         if (stack.getDamageValue() >= 1) {
             if (consumeGhastTear(player)) {
-                stack.setDamageValue(0); // Ripara
-                tag.putInt("CauldronTimer", 0); // Resetta il timer
+                stack.setDamageValue(0); // Repairs
+                tag.putInt("CauldronTimer", 0); // Resets the timer
             }
         } else {
-            // Se è carico, aumenta il timer
+            // If it is charged, increase the timer
             timer++;
             if (timer >= MAX_COOLDOWN) {
                 applyRandomPositiveEffect(player);
-                // 5 secondi di nausea (100 tick)
+                // 5 seconds of nausea (100 ticks)
                 player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, true, false, true));
 
-                stack.setDamageValue(1); // Scarica il talismano
+                stack.setDamageValue(1); // Discharges the talisman
                 timer = 0;
             }
             tag.putInt("CauldronTimer", timer);
@@ -97,7 +97,7 @@ public class RandomCauldronItem extends Item implements ICurioItem {
         RandomSource random = player.level().getRandom();
         MobEffect effect = positiveEffects.get(random.nextInt(positiveEffects.size()));
 
-        // Assegna l'effetto casuale per 3 minuti (3600 tick)
+        // Assigns the random effect for 3 minutes (3600 ticks)
         player.addEffect(new MobEffectInstance(effect, 3600, 0, true, false, true));
     }
 
@@ -109,17 +109,17 @@ public class RandomCauldronItem extends Item implements ICurioItem {
     @Override
     public int getBarWidth(ItemStack stack) {
         if (stack.getDamageValue() >= 1) {
-            return 0; // Se è scarico, barra vuota
+            return 0; // If it's discharged, empty bar
         }
         CompoundTag tag = stack.getTag();
         int timer = tag != null ? tag.getInt("CauldronTimer") : 0;
-        // La larghezza massima della barra è 13
+        // The maximum width of the bar is 13
         return Math.round(13.0F * timer / (float) MAX_COOLDOWN);
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        // Colore arcobaleno basato sul tempo di sistema (ruota ogni 2 secondi)
+        // Rainbow color based on system time (rotates every 2 seconds)
         float hue = (System.currentTimeMillis() % 2000L) / 2000.0F;
         return Mth.hsvToRgb(hue, 1.0F, 1.0F);
     }
