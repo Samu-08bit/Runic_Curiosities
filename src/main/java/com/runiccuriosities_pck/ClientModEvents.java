@@ -25,7 +25,7 @@ import java.awt.Color;
 
 public class ClientModEvents {
 
-    // 1. Bus FORGE: Per gli eventi "in-game" (es. overlay rosso sullo schermo)
+    // 1. FORGE Bus: For in-game events (e.g. red overlay on the screen)
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientForgeEvents {
 
@@ -48,69 +48,70 @@ public class ClientModEvents {
 
                 if (Screen.hasAltDown()) {
                     String path = registryName.getPath();
+                    long time = System.currentTimeMillis();
+                    int rgb = Color.HSBtoRGB((time % 2000L) / 2000.0f, 1.0f, 1.0f);
+
                     switch(path) {
-                        case "example_item": // In caso l'ID sia ancora example_item
+                        case "example_item": // In case the ID is still example_item
                         case "talisman_of_intuition":
-                            event.getToolTip().add(Component.literal("Provides infinite Glowing status effect while equipped.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Provides infinite Glowing status effect while equipped.").withStyle(ChatFormatting.YELLOW));
                             break;
                         case "golden_emerald":
-                            event.getToolTip().add(Component.literal("Grants infinite Hero of the Village effect. Normal piglins will not attack you.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Grants infinite Hero of the Village effect. Normal piglins will not attack you.").withStyle(ChatFormatting.GREEN));
                             break;
                         case "egg_of_gluttony":
-                            event.getToolTip().add(Component.literal("Inflicts infinite Hunger. Eating food grants Strength for 5 minutes.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Inflicts infinite Hunger. Eating food grants Strength for 5 minutes.").withStyle(ChatFormatting.WHITE));
                             break;
                         case "scarlet_eyes":
-                            event.getToolTip().add(Component.literal("At night, provides infinite Night Vision and a reddish visual effect.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("At night, provides infinite Night Vision and a reddish visual effect.").withStyle(ChatFormatting.DARK_RED));
                             break;
                         case "ignitor_shield":
-                            event.getToolTip().add(Component.literal("Infinite Fire Resistance, projectile immunity, attackers catch fire. Fireproof.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Infinite Fire Resistance, projectile immunity, attackers catch fire. Fireproof.").withStyle(ChatFormatting.GOLD));
                             break;
                         case "recharging_bread":
-                            event.getToolTip().add(Component.literal("Infinite Saturation. Striking an enemy summons lightning. Recharges with Wheat.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Infinite Saturation. Striking an enemy summons lightning. Recharges with Wheat.").withStyle(ChatFormatting.AQUA));
                             break;
                         case "glass_cloth":
                             event.getToolTip().add(Component.literal("Infinite Invisibility until you touch a liquid.").withStyle(ChatFormatting.GRAY));
                             break;
                         case "guardian_golem":
-                            event.getToolTip().add(Component.literal("Summons an iron golem to protect you when hit (max 1 min). Recharges with Iron Ingot.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Summons an iron golem to protect you when hit (max 1 min). Recharges with Iron Ingot.").withStyle(ChatFormatting.DARK_GREEN));
                             break;
                         case "car_bomb":
-                            event.getToolTip().add(Component.literal("Summons a TNT minecart under a target hit by a projectile. Recharges with TNT.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Summons a TNT minecart under a target hit by a projectile. Recharges with TNT.").withStyle(ChatFormatting.RED));
                             break;
                         case "energy_drink":
-                            event.getToolTip().add(Component.literal("Infinite Haste I, Speed I, and Jump Boost I.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Infinite Haste I, Speed I, and Jump Boost I.").withStyle(ChatFormatting.YELLOW));
                             break;
                         case "time_hourglass":
-                            long time = System.currentTimeMillis();
-                            int rgb = Color.HSBtoRGB((time % 2000L) / 2000.0f, 1.0f, 1.0f);
                             event.getToolTip().add(Component.literal("Freezes time in an area for 15 seconds (keybind). 3 min cooldown, recharges with Soul Sand.").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb))));
                             break;
                         case "sponge_ring":
-                            event.getToolTip().add(Component.literal("Continuously drains liquids in a 4-block radius.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Continuously drains liquids in a 4-block radius.").withStyle(ChatFormatting.DARK_BLUE));
                             break;
                         case "vipers_embrace":
-                            event.getToolTip().add(Component.literal("Poison immunity. Inflicts Poison on attacked enemies (10 seconds).").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Poison immunity. Inflicts Poison on attacked enemies (10 seconds).").withStyle(ChatFormatting.DARK_GREEN));
                             break;
                         case "heart_of_resolution":
-                            event.getToolTip().add(Component.literal("Resistance I and +20 Max Health (+10 hearts). Automatically gains Curse of Binding.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Resistance I and +20 Max Health (+10 hearts). Automatically gains Curse of Binding.").withStyle(ChatFormatting.DARK_RED));
                             break;
                         case "warden_antennas":
-                            event.getToolTip().add(Component.literal("Nearby entities suffer from Darkness and Glowing.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Nearby entities suffer from Darkness and Glowing.").withStyle(ChatFormatting.DARK_AQUA));
                             break;
                         case "spider_boots":
-                            event.getToolTip().add(Component.literal("Climb walls, no fall damage, completely silent footsteps.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Climb walls, no fall damage, completely silent footsteps.").withStyle(ChatFormatting.DARK_RED));
                             break;
                         case "fairy_wings":
-                            event.getToolTip().add(Component.literal("Infinite Regeneration I and Luck I. Grants Creative flight.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Infinite Regeneration I and Luck I. Grants Creative flight.").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb))));
                             break;
                         case "neptunes_helmet":
-                            event.getToolTip().add(Component.literal("Grants water-related powers (animates when in fluids).").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Grants water-related powers (animates when in fluids).").withStyle(ChatFormatting.DARK_AQUA));
                             break;
                         case "random_cauldron":
-                            event.getToolTip().add(Component.literal("Every 3 mins, grants a random positive effect with initial Nausea. Recharges with Ghast Tear.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Every 3 mins, grants a random positive effect with initial Nausea. Recharges with Ghast Tear.").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(rgb))));
                             break;
                         case "warden_beam":
-                            event.getToolTip().add(Component.literal("Fires a Sonic Boom (30s cooldown) followed by Slowness and Weakness.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Fires a Sonic Boom (30s cooldown) followed by Slowness and Weakness.").withStyle(ChatFormatting.DARK_AQUA));
                             break;
                     }
                 } else {
@@ -139,17 +140,17 @@ public class ClientModEvents {
         }
     }
 
-    // 2. Bus MOD: Per le registrazioni di setup lato client (es. Animazione elmetto)
+    // 2. MOD Bus: For client-side setup registrations (e.g. Helmet animation)
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientSetupEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
-                // Registriamo la proprietà "anim_state" per il Neptune's Helmet
+                // Register the "anim_state" property for Neptune's Helmet
                 ItemProperties.register(ModItems.NEPTUNES_HELMET.get(), new ResourceLocation(RunicCuriosities.MODID, "anim_state"),
                         (itemStack, clientLevel, livingEntity, seed) -> {
                             if (itemStack.hasTag() && itemStack.getTag().contains("AnimState")) {
-                                // Ritorna 0.0, 0.5 o 1.0 a seconda dello stato per cambiare texture
+                                // Returns 0.0, 0.5, or 1.0 depending on the state to change texture
                                 return itemStack.getTag().getInt("AnimState") / 2.0F;
                             }
                             return 0.0F;
