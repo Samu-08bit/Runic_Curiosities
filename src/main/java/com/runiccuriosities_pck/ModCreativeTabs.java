@@ -43,7 +43,7 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.NEPTUNES_HELMET.get());
                         pOutput.accept(ModItems.RANDOM_CAULDRON.get());
                         pOutput.accept(ModItems.WARDEN_BEAM.get());
-
+                        pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
                     })
                     .build());
 

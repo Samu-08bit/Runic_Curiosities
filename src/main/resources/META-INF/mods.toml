@@ -4,7 +4,7 @@ license="MIT and HydroVoltz (SavistarIT)"
 
 [[mods]]
 modId="runic_curiosities"
-version="2.0.0"
+version="1.1.0"
 displayName="Runic Curiosities"
 authors="HydroVoltz (SavistarIT)"
 logoFile="icon.png"

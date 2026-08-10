@@ -1,0 +1,129 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "body",
+					"pivot": [0, 12.6, -3.3],
+					"cubes": [
+						{"origin": [-6, 8, -5], "size": [12, 8, 10], "uv": [0, 0]},
+						{"origin": [-4, 8, -6], "size": [2, 8, 1], "uv": [10, 32]},
+						{"origin": [2, 8, -6], "size": [2, 8, 1], "uv": [16, 34]},
+						{"origin": [-2, 12, -6], "size": [4, 2, 1], "uv": [32, 24]}
+					],
+					"locators": {
+						"locator": [0, 14, 0]
+					}
+				},
+				{
+					"name": "tail",
+					"parent": "body",
+					"pivot": [0, 10.625, -4.125],
+					"cubes": [
+						{"origin": [-1, 9, -4], "size": [2, 2, 6], "uv": [0, 24]}
+					]
+				},
+				{
+					"name": "gun",
+					"parent": "tail",
+					"pivot": [0, 10, 3],
+					"cubes": [
+						{"origin": [-1.75, 11, 1.25], "size": [3.5, 2, 3.5], "uv": [28, 28]},
+						{"origin": [-1, 10, 2], "size": [2, 4, 2], "uv": [36, 18]}
+					]
+				},
+				{
+					"name": "antenna",
+					"parent": "body",
+					"pivot": [4.5, 15.5, 3.5],
+					"cubes": [
+						{"origin": [4, 15, 3], "size": [1, 5, 1], "uv": [34, 39]}
+					]
+				},
+				{
+					"name": "backpack",
+					"parent": "body",
+					"pivot": [0, 11, 6],
+					"cubes": [
+						{"origin": [-5, 9, 5], "size": [10, 4, 2], "uv": [0, 18]}
+					]
+				},
+				{
+					"name": "zip",
+					"parent": "backpack",
+					"pivot": [5, 13, 6],
+					"cubes": [
+						{
+							"origin": [-5, 13, 5.5],
+							"size": [10, 0.5, 1],
+							"uv": {
+								"north": {"uv": [38, 43], "uv_size": [10, 0.5]},
+								"east": {"uv": [32, 27], "uv_size": [1, 0.5]},
+								"south": {"uv": [44, 0], "uv_size": [10, 0.5]},
+								"west": {"uv": [33, 27], "uv_size": [1, 0.5]},
+								"up": {"uv": [40, 31], "uv_size": [10, 1]},
+								"down": {"uv": [40, 33], "uv_size": [10, -1]}
+							}
+						}
+					]
+				},
+				{
+					"name": "left hand",
+					"parent": "body",
+					"pivot": [6.16667, 12, 0],
+					"cubes": [
+						{"origin": [6, 11, -1], "size": [1, 2, 2], "uv": [40, 27]},
+						{"origin": [7, 10, -1], "size": [1, 2, 2], "uv": [6, 41]},
+						{"origin": [7, 9, -5], "size": [1, 2, 4], "uv": [0, 32]}
+					]
+				},
+				{
+					"name": "right hand",
+					"parent": "body",
+					"pivot": [-6.16667, 12, 0],
+					"cubes": [
+						{"origin": [-7, 11, -1], "size": [1, 2, 2], "uv": [28, 39]},
+						{"origin": [-8, 10, -1], "size": [1, 2, 2], "uv": [22, 41]},
+						{"origin": [-8, 9, -5], "size": [1, 2, 4], "uv": [28, 33]}
+					]
+				},
+				{
+					"name": "suspension",
+					"pivot": [0, 8.5, 0],
+					"cubes": [
+						{"origin": [-4, 3, -1], "size": [1, 5, 2], "uv": [22, 34]},
+						{"origin": [3, 3, -1], "size": [1, 5, 2], "uv": [0, 38]}
+					]
+				},
+				{
+					"name": "rigid pipe",
+					"pivot": [0, 3, 0],
+					"cubes": [
+						{"origin": [-3, 2, -1], "size": [6, 2, 2], "uv": [16, 24]}
+					]
+				},
+				{
+					"name": "Wheel",
+					"pivot": [0, 3, 0],
+					"cubes": [
+						{"origin": [-1, 0, -2], "size": [2, 2, 4], "uv": [24, 18]},
+						{"origin": [-1, 4, -2], "size": [2, 2, 4], "uv": [16, 28]},
+						{"origin": [-1, 1, 2], "size": [2, 4, 1], "uv": [38, 33]},
+						{"origin": [-1, 2, 1], "size": [2, 2, 1], "uv": [12, 43]},
+						{"origin": [-1, 1, -3], "size": [2, 4, 1], "uv": [38, 38]},
+						{"origin": [-1, 2, -2], "size": [2, 2, 1], "uv": [42, 24]}
+					]
+				}
+			]
+		}
+	]
+}
