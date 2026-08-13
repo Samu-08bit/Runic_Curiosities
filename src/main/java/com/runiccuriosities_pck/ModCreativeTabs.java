@@ -19,6 +19,7 @@ public class ModCreativeTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND_BLOCK_ITEM.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
                         pOutput.accept(ModItems.EXAMPLE_ITEM.get());
                         pOutput.accept(ModItems.GOLDEN_EMERALD.get());
                         pOutput.accept(ModItems.EGG_OF_GLUTTONY.get());
@@ -43,7 +44,6 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.NEPTUNES_HELMET.get());
                         pOutput.accept(ModItems.RANDOM_CAULDRON.get());
                         pOutput.accept(ModItems.WARDEN_BEAM.get());
-                        pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
                     })
                     .build());
 

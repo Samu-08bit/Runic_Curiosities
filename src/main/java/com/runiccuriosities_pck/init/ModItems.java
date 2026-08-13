@@ -77,5 +77,5 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16)));
 
     public static final RegistryObject<net.minecraft.world.item.Item> SAVIRITIUM_GOLEM_SPAWN_EGG = ITEMS.register("saviritium_golem_spawn_egg",
-            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0x8a8a8a, 0x00FF00, new net.minecraft.world.item.Item.Properties()));
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties()));
 }

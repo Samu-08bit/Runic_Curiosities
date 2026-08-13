@@ -1,7 +1,8 @@
 {
   "item.runic_curiosities.saviritium_compound": "Saviritium Compound",
   "block.runic_curiosities.saviritium_compound_block": "Saviritium Compound Block",
-  "item.runic_curiosities.saviritium_golem_spawn_egg": "Saviritium Golem Egg",
+  "item.runic_curiosities.saviritium_golem_spawn_egg": "Saviritium Golem Spawn Egg",
+  "entity.runic_curiosities.saviritium_golem": "Saviritium Golem",
   "item.runic_curiosities.example_item": "Talisman of Intuition",
   "item.runic_curiosities.golden_emerald": "Golden Emerald",
   "item.runic_curiosities.egg_of_gluttony": "Egg of Gluttony",

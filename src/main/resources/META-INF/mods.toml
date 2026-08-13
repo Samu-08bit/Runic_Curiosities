@@ -4,12 +4,12 @@ license="MIT and HydroVoltz (SavistarIT)"
 
 [[mods]]
 modId="runic_curiosities"
-version="1.1.0-alpha.2"
-displayName="Runic Curiosities"
+version="1.1.0-alpha.3"
+displayName="Runic Curiosities [Magic & Items]"
 authors="HydroVoltz (SavistarIT)"
 logoFile="icon.png"
 description='''
-A simple and elegant talisman mod that adds 2D runic trinkets compatible with Curios API.
+A unique and elegant talisman mod that adds 2D runic trinkets and other things compatible with Curios API and Geckolib.
 '''
 
 [[dependencies.runic_curiosities]]
