@@ -14,6 +14,7 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 
 @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientRenderEvents {
@@ -154,5 +155,22 @@ public class ClientRenderEvents {
 
     private static void vertex(Matrix4f matrix, VertexConsumer builder, float x, float y, float z, int r, int g, int b, int a) {
         builder.vertex(matrix, x, y, z).color(r, g, b, a).endVertex();
+    }
+
+    // --- AGGIUNGI QUESTO PEZZO PER REGISTRARE IL LASER E IL SUO MODELLO ---
+    @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+
+        // 1. Diciamo al gioco di preparare ("infornare") il modello Java del Laser
+        @SubscribeEvent
+        public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(com.runiccuriosities_pck.client.model.Modelgolem_laser.LAYER_LOCATION, com.runiccuriosities_pck.client.model.Modelgolem_laser::createBodyLayer);
+        }
+
+        // 2. Colleghiamo il Renderer (che userà il modello infornato qua sopra) all'entità
+        @SubscribeEvent
+        public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.GOLEM_LASER.get(), com.runiccuriosities_pck.client.renderer.GolemLaserRenderer::new);
+        }
     }
 }

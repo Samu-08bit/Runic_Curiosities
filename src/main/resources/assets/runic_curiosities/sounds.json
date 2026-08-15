@@ -1,0 +1,22 @@
+{
+  "laser_shoot": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.laser_shoot",
+    "sounds": [
+      {
+        "name": "runic_curiosities:laser_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "golem_death": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_death",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_death",
+        "stream": false
+      }
+    ]
+  }
+}

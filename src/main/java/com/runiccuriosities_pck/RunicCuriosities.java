@@ -26,6 +26,7 @@ public class RunicCuriosities {
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModSounds.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

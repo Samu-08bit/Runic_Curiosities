@@ -57,6 +57,7 @@
 			}
 		},
 		"animation.saviritium_golem.attack": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 3,
 			"bones": {
 				"tail": {
@@ -194,6 +195,141 @@
 						},
 						"2.75": {
 							"vector": [1, 1, 1]
+						}
+					}
+				}
+			}
+		},
+		"animation.saviritium_golem.sit": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 2.25,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": {
+							"vector": [0, -1, 0]
+						},
+						"0.25": {
+							"vector": [0, -2, 0]
+						},
+						"0.5": {
+							"vector": [0, -3, 0]
+						},
+						"0.75": {
+							"vector": [0, -4, 0]
+						},
+						"1.0": {
+							"vector": [0, -5, 0]
+						},
+						"1.25": {
+							"vector": [0, -6, 0]
+						},
+						"1.5": {
+							"vector": [0, -7, 0]
+						},
+						"1.75": {
+							"vector": [0, -7.5, 0]
+						}
+					}
+				},
+				"left hand": {
+					"rotation": {
+						"1.5": {
+							"vector": [0, 0, 0]
+						},
+						"1.75": {
+							"vector": [30, 0, 0]
+						},
+						"2.0": {
+							"vector": [60, 0, 0]
+						},
+						"2.25": {
+							"vector": [90, 0, 0]
+						}
+					},
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"right hand": {
+					"rotation": {
+						"1.5": {
+							"vector": [0, 0, 0]
+						},
+						"1.75": {
+							"vector": [30, 0, 0]
+						},
+						"2.0": {
+							"vector": [60, 0, 0]
+						},
+						"2.25": {
+							"vector": [90, 0, 0]
+						}
+					},
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.saviritium_golem.stand": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 2.25,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": {
+							"vector": [0, -7.5, 0]
+						},
+						"0.25": {
+							"vector": [0, -6, 0]
+						},
+						"0.5": {
+							"vector": [0, -5, 0]
+						},
+						"0.75": {
+							"vector": [0, -4, 0]
+						},
+						"1.0": {
+							"vector": [0, -3, 0]
+						},
+						"1.25": {
+							"vector": [0, -2, 0]
+						},
+						"1.5": {
+							"vector": [0, -1, 0]
+						}
+					}
+				},
+				"left hand": {
+					"rotation": {
+						"1.5": {
+							"vector": [90, 0, 0]
+						},
+						"1.75": {
+							"vector": [60, 0, 0]
+						},
+						"2.0": {
+							"vector": [30, 0, 0]
+						},
+						"2.25": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"right hand": {
+					"rotation": {
+						"1.5": {
+							"vector": [90, 0, 0]
+						},
+						"1.75": {
+							"vector": [60, 0, 0]
+						},
+						"2.0": {
+							"vector": [30, 0, 0]
+						},
+						"2.25": {
+							"vector": [0, 0, 0]
 						}
 					}
 				}

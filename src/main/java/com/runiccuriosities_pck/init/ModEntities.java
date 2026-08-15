@@ -14,8 +14,18 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SaviritiumGolemEntity>> SAVIRITIUM_GOLEM =
             ENTITY_TYPES.register("saviritium_golem",
                     () -> EntityType.Builder.of(SaviritiumGolemEntity::new, MobCategory.CREATURE)
-                            .sized(1.0f, 1.0f) // Qui imposti la larghezza e l'altezza dell'hitbox
+                            .sized(1.0f, 1.0f) // Larghezza e altezza dell'hitbox del golem
                             .build("saviritium_golem"));
+
+    // REGISTRAZIONE DEL LASER (GolemLaserEntity)
+    public static final RegistryObject<EntityType<GolemLaserEntity>> GOLEM_LASER =
+            ENTITY_TYPES.register("golem_laser",
+                    () -> EntityType.Builder.<GolemLaserEntity>of(GolemLaserEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f) // Hitbox piccolina per il proiettile
+                            .clientTrackingRange(4)
+                            .updateInterval(1)
+                            .setShouldReceiveVelocityUpdates(true)
+                            .build("golem_laser"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

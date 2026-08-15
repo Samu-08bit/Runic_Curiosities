@@ -50,6 +50,9 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
     private static final EntityDataAccessor<Boolean> DATA_PICKING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_SHOOTING = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_STANDING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+
+    private int standUpTick = 0;
 
     public SaviritiumGolemEntity(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
@@ -71,6 +74,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         super.defineSynchedData();
         this.entityData.define(DATA_PICKING_UP, false);
         this.entityData.define(DATA_SHOOTING, false);
+        this.entityData.define(DATA_STANDING_UP, false);
     }
 
     public boolean isPickingUp() { return this.entityData.get(DATA_PICKING_UP); }
@@ -78,6 +82,9 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
     public boolean isShooting() { return this.entityData.get(DATA_SHOOTING); }
     public void setShooting(boolean shooting) { this.entityData.set(DATA_SHOOTING, shooting); }
+
+    public boolean isStandingUp() { return this.entityData.get(DATA_STANDING_UP); }
+    public void setStandingUp(boolean standingUp) { this.entityData.set(DATA_STANDING_UP, standingUp); }
 
     @Override
     protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
@@ -88,6 +95,19 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     @Override
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
         return null;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide && this.isStandingUp()) {
+            this.navigation.stop(); // Evita che scivoli in giro mentre si alza
+            if (this.standUpTick > 0) {
+                this.standUpTick--;
+            } else {
+                this.setStandingUp(false);
+            }
+        }
     }
 
     @Override
@@ -103,7 +123,6 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        // AGGIUNTO: Attacca tutti i mostri (Monster.class include Zombie, Scheletri, Creeper ecc.) a vista
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
     }
 
@@ -128,7 +147,18 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             } else if (player.getItemInHand(hand).isEmpty()) {
                 if (!this.level().isClientSide) {
-                    this.setOrderedToSit(!this.isOrderedToSit());
+                    boolean wasSitting = this.isOrderedToSit();
+                    boolean sit = !wasSitting;
+
+                    this.setOrderedToSit(sit);
+                    this.setInSittingPose(sit);
+
+                    // Se si sta alzando, attiva il timer!
+                    if (!sit && wasSitting) {
+                        this.setStandingUp(true);
+                        this.standUpTick = 45; // 2.25 secondi in tick
+                    }
+
                     this.navigation.stop();
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
@@ -200,22 +230,43 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        Arrow arrow = new Arrow(this.level(), this);
+        GolemLaserEntity laser = new GolemLaserEntity(ModEntities.GOLEM_LASER.get(), this, this.level());
+
+        // Calcolo della mira (dritto al petto)
         double d0 = target.getX() - this.getX();
-        double d1 = target.getY(0.3333333333333333D) - arrow.getY();
+        double d1 = target.getY(0.5D) - laser.getY();
         double d2 = target.getZ() - this.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 
-        arrow.shoot(d0, d1 + d3 * 0.20D, d2, 1.6F, 0.0F);
-        arrow.setBaseDamage(5.0D);
+        // 1.5F è la velocità. Se lo vuoi più veloce, metti 2.0F!
+        laser.shoot(d0, d1, d2, 1.5F, 0.0F);
+        laser.setBaseDamage(14.0D);
 
-        this.playSound(net.minecraft.sounds.SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level().addFreshEntity(arrow);
+        // SUONO UFFICIALE DEL LASER
+        this.playSound(ModSounds.LASER_SHOOT.get(), 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+
+        // Genera il laser nel mondo
+        this.level().addFreshEntity(laser);
+    }
+
+    @Override
+    protected net.minecraft.sounds.SoundEvent getDeathSound() {
+        // Usa il tuo suono custom!
+        return ModSounds.GOLEM_DEATH.get();
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 5, event -> {
+
+            if (this.isInSittingPose() || this.isOrderedToSit()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.sit"));
+                return PlayState.CONTINUE;
+            }
+
+            if (this.isStandingUp()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.stand"));
+                return PlayState.CONTINUE;
+            }
 
             if (this.isShooting()) {
                 event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.attack"));
@@ -224,11 +275,6 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
             if (this.isPickingUp()) {
                 event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.pickup"));
-                return PlayState.CONTINUE;
-            }
-
-            if (this.isOrderedToSit()) {
-                event.getController().setAnimation(RawAnimation.begin().thenLoop("animation.saviritium_golem.idle"));
                 return PlayState.CONTINUE;
             }
 
