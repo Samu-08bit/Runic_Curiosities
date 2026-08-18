@@ -113,6 +113,9 @@ public class ClientModEvents {
                         case "warden_beam":
                             event.getToolTip().add(Component.literal("Fires a Sonic Boom (30s cooldown) followed by Slowness and Weakness.").withStyle(ChatFormatting.DARK_AQUA));
                             break;
+                        case "saviritium_golem_spawn_egg":
+                            event.getToolTip().add(Component.literal("Need a friend who doesn't talk back but carries 27 slots of dirt? Look no further! This one-wheeled wonder will fiercely protect you with its tail laser and follow you everywhere.").withStyle(ChatFormatting.GRAY));
+                            break;
                     }
                 } else {
                     event.getToolTip().add(Component.literal("Hold [ALT] for details").withStyle(ChatFormatting.DARK_GRAY));

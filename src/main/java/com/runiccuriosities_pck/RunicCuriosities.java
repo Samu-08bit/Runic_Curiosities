@@ -17,7 +17,7 @@ public class RunicCuriosities {
     public RunicCuriosities() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Registriamo la nostra nuova Tab per la Creativa
+        // Creative TAB
         ModCreativeTabs.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

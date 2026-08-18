@@ -18,5 +18,25 @@
         "stream": false
       }
     ]
+  },
+  "golem_hurt": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_hurt",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "golem_tame": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_tame",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_tame",
+        "stream": false
+      }
+    ]
   }
 }

@@ -26,7 +26,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -51,6 +50,8 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     private static final EntityDataAccessor<Boolean> DATA_PICKING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_SHOOTING = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_STANDING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+    // NUOVO DATO SINCRONIZZATO PER IL MENU:
+    private static final EntityDataAccessor<Boolean> DATA_STAYING = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
 
     private int standUpTick = 0;
 
@@ -75,6 +76,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         this.entityData.define(DATA_PICKING_UP, false);
         this.entityData.define(DATA_SHOOTING, false);
         this.entityData.define(DATA_STANDING_UP, false);
+        this.entityData.define(DATA_STAYING, false);
     }
 
     public boolean isPickingUp() { return this.entityData.get(DATA_PICKING_UP); }
@@ -85,6 +87,10 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
     public boolean isStandingUp() { return this.entityData.get(DATA_STANDING_UP); }
     public void setStandingUp(boolean standingUp) { this.entityData.set(DATA_STANDING_UP, standingUp); }
+    public void setStandUpTick(int ticks) { this.standUpTick = ticks; }
+
+    public boolean isStaying() { return this.entityData.get(DATA_STAYING); }
+    public void setStaying(boolean staying) { this.entityData.set(DATA_STAYING, staying); }
 
     @Override
     protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
@@ -101,7 +107,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     public void tick() {
         super.tick();
         if (!this.level().isClientSide && this.isStandingUp()) {
-            this.navigation.stop(); // Evita che scivoli in giro mentre si alza
+            this.navigation.stop();
             if (this.standUpTick > 0) {
                 this.standUpTick--;
             } else {
@@ -112,7 +118,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
+        this.goalSelector.addGoal(1, new GolemSitOrStayGoal(this));
         this.goalSelector.addGoal(2, new GolemLaserAttackGoal(this));
         this.goalSelector.addGoal(3, new GolemPickupItemGoal(this));
         this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.2D, 10.0F, 2.0F, false));
@@ -132,6 +138,9 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             if (!this.level().isClientSide) {
                 this.tame(player);
                 this.navigation.stop();
+                this.setCustomName(Component.literal("Saviritium Golem - " + player.getName().getString()));
+                this.setCustomNameVisible(true);
+                this.playSound(ModSounds.GOLEM_TAME.get(), 1.0F, 1.0F);
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
@@ -146,20 +155,9 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             } else if (player.getItemInHand(hand).isEmpty()) {
-                if (!this.level().isClientSide) {
-                    boolean wasSitting = this.isOrderedToSit();
-                    boolean sit = !wasSitting;
-
-                    this.setOrderedToSit(sit);
-                    this.setInSittingPose(sit);
-
-                    // Se si sta alzando, attiva il timer!
-                    if (!sit && wasSitting) {
-                        this.setStandingUp(true);
-                        this.standUpTick = 45; // 2.25 secondi in tick
-                    }
-
-                    this.navigation.stop();
+                if (this.level().isClientSide) {
+                    // Ora usiamo il nuovo "this.isStaying()" sincronizzato!
+                    net.minecraft.client.Minecraft.getInstance().setScreen(new com.runiccuriosities_pck.client.GolemCommandScreen(this.getId(), this.isInSittingPose(), this.isStaying()));
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
@@ -170,6 +168,8 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        compound.putBoolean("IsStaying", this.isStaying()); // Salviamo lo stato
+
         if (this.inventory != null) {
             ListTag listTag = new ListTag();
             for (int i = 0; i < this.inventory.getContainerSize(); i++) {
@@ -188,6 +188,10 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        if (compound.contains("IsStaying")) {
+            this.setStaying(compound.getBoolean("IsStaying")); // Carichiamo lo stato
+        }
+
         if (this.inventory == null) {
             this.inventory = new SimpleContainer(27);
         }
@@ -229,36 +233,46 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     }
 
     @Override
+    public boolean canAttack(LivingEntity target) {
+        if (target instanceof SaviritiumGolemEntity otherGolem) {
+            if (this.isTame() && otherGolem.isTame()) {
+                if (this.getOwnerUUID() != null && this.getOwnerUUID().equals(otherGolem.getOwnerUUID())) {
+                    return false;
+                }
+            }
+        }
+        return super.canAttack(target);
+    }
+
+    @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         GolemLaserEntity laser = new GolemLaserEntity(ModEntities.GOLEM_LASER.get(), this, this.level());
 
-        // Calcolo della mira (dritto al petto)
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.5D) - laser.getY();
         double d2 = target.getZ() - this.getZ();
 
-        // 1.5F è la velocità. Se lo vuoi più veloce, metti 2.0F!
         laser.shoot(d0, d1, d2, 1.5F, 0.0F);
         laser.setBaseDamage(14.0D);
-
-        // SUONO UFFICIALE DEL LASER
         this.playSound(ModSounds.LASER_SHOOT.get(), 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-
-        // Genera il laser nel mondo
         this.level().addFreshEntity(laser);
     }
 
     @Override
     protected net.minecraft.sounds.SoundEvent getDeathSound() {
-        // Usa il tuo suono custom!
         return ModSounds.GOLEM_DEATH.get();
+    }
+
+    @Override
+    protected net.minecraft.sounds.SoundEvent getHurtSound(net.minecraft.world.damagesource.DamageSource damageSourceIn) {
+        return ModSounds.GOLEM_HURT.get();
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 5, event -> {
 
-            if (this.isInSittingPose() || this.isOrderedToSit()) {
+            if (this.isInSittingPose()) {
                 event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.sit"));
                 return PlayState.CONTINUE;
             }
@@ -378,6 +392,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         private final SaviritiumGolemEntity golem;
         private ItemEntity targetItem;
         private int pickupTick;
+        private int stuckTimeout;
 
         public GolemPickupItemGoal(SaviritiumGolemEntity golem) {
             this.golem = golem;
@@ -397,8 +412,15 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             );
 
             if (items.isEmpty()) return false;
-            this.targetItem = items.get(0);
-            return true;
+
+            for (ItemEntity item : items) {
+                net.minecraft.world.level.pathfinder.Path path = this.golem.getNavigation().createPath(item, 0);
+                if (path != null && path.canReach()) {
+                    this.targetItem = item;
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -409,12 +431,16 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             if (this.golem.isPickingUp()) {
                 return this.pickupTick < 65;
             }
+
+            if (this.stuckTimeout > 60) return false;
+
             return this.targetItem != null && this.targetItem.isAlive() && this.golem.canHoldItem(this.targetItem.getItem());
         }
 
         @Override
         public void start() {
             this.pickupTick = 0;
+            this.stuckTimeout = 0;
             this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
         }
 
@@ -423,6 +449,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             this.targetItem = null;
             this.golem.setPickingUp(false);
             this.pickupTick = 0;
+            this.stuckTimeout = 0;
             this.golem.getNavigation().stop();
         }
 
@@ -455,12 +482,42 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             double distance = this.golem.distanceToSqr(this.targetItem);
 
             if (distance > 4.0D) {
-                this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
+                if (this.golem.getNavigation().isDone()) {
+                    this.stuckTimeout += 2;
+                    this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
+                } else {
+                    this.stuckTimeout++;
+                }
             } else {
                 this.golem.getNavigation().stop();
                 this.golem.setPickingUp(true);
                 this.pickupTick = 0;
+                this.stuckTimeout = 0;
             }
+        }
+    }
+
+    class GolemSitOrStayGoal extends Goal {
+        private final SaviritiumGolemEntity golem;
+
+        public GolemSitOrStayGoal(SaviritiumGolemEntity golem) {
+            this.golem = golem;
+            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            return this.golem.isOrderedToSit();
+        }
+
+        @Override
+        public void start() {
+            this.golem.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            this.golem.getNavigation().stop();
         }
     }
 }

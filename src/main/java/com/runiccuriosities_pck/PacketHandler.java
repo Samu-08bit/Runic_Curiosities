@@ -16,5 +16,6 @@ public class PacketHandler {
     public static void register() {
         int id = 0;
         INSTANCE.registerMessage(id++, WardenBeamPacket.class, WardenBeamPacket::toBytes, WardenBeamPacket::new, WardenBeamPacket::handle);
+        INSTANCE.registerMessage(id++, GolemCommandPacket.class, GolemCommandPacket::toBytes, GolemCommandPacket::new, GolemCommandPacket::handle);
     }
 }

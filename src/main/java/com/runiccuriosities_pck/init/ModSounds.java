@@ -11,12 +11,14 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, RunicCuriosities.MODID);
 
-    // Il suono del laser
+    // laser sound
     public static final RegistryObject<SoundEvent> LASER_SHOOT = registerSoundEvent("laser_shoot");
-
-    // ---> IL NUOVO SUONO DI MORTE DEL GOLEM <---
+    // death sound
     public static final RegistryObject<SoundEvent> GOLEM_DEATH = registerSoundEvent("golem_death");
-
+    // hurt sound
+    public static final RegistryObject<SoundEvent> GOLEM_HURT = registerSoundEvent("golem_hurt");
+    // tame sound
+    public static final RegistryObject<SoundEvent> GOLEM_TAME = registerSoundEvent("golem_tame");
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(RunicCuriosities.MODID, name)));
     }

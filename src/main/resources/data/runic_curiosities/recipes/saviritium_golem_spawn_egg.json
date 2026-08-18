@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RCN",
+    "SVS",
+    "IBI"
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "V": {
+      "item": "runic_curiosities:saviritium_compound_block"
+    },
+    "I": {
+      "item": "minecraft:iron_bars"
+    },
+    "B": {
+      "item": "minecraft:coal_block"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:saviritium_golem_spawn_egg",
+    "count": 1
+  }
+}
