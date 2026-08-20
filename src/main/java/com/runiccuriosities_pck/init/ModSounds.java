@@ -22,6 +22,14 @@ public class ModSounds {
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(RunicCuriosities.MODID, name)));
     }
+    public static final RegistryObject<SoundEvent> HOURGLASS_CUSTOM_1 = SOUND_EVENTS.register("hourglass_custom_1",
+            () -> SoundEvent.createVariableRangeEvent(new net.minecraft.resources.ResourceLocation(RunicCuriosities.MODID, "hourglass_custom_1")));
+
+    public static final RegistryObject<SoundEvent> HOURGLASS_CUSTOM_2 = SOUND_EVENTS.register("hourglass_custom_2",
+            () -> SoundEvent.createVariableRangeEvent(new net.minecraft.resources.ResourceLocation(RunicCuriosities.MODID, "hourglass_custom_2")));
+
+    public static final RegistryObject<SoundEvent> HOURGLASS_CUSTOM_3 = SOUND_EVENTS.register("hourglass_custom_3",
+            () -> SoundEvent.createVariableRangeEvent(new net.minecraft.resources.ResourceLocation(RunicCuriosities.MODID, "hourglass_custom_3")));
 
     public static void register(IEventBus eventBus) {
         SOUND_EVENTS.register(eventBus);

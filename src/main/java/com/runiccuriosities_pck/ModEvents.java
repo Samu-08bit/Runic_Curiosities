@@ -1,5 +1,6 @@
 package com.runiccuriosities_pck;
 
+import com.runiccuriosities_pck.ModCommands;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -59,10 +60,10 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
         ModCommands.register(event.getDispatcher());
-    }
+    }*/
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {

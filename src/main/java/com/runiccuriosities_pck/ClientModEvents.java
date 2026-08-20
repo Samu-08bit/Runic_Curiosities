@@ -22,6 +22,11 @@ import top.theillusivec4.curios.api.CuriosApi;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import java.awt.Color;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
+import java.util.WeakHashMap;
 
 public class ClientModEvents {
 
@@ -72,7 +77,7 @@ public class ClientModEvents {
                             event.getToolTip().add(Component.literal("Infinite Saturation. Striking an enemy summons lightning. Recharges with Wheat.").withStyle(ChatFormatting.AQUA));
                             break;
                         case "glass_cloth":
-                            event.getToolTip().add(Component.literal("Infinite Invisibility until you touch a liquid.").withStyle(ChatFormatting.GRAY));
+                            event.getToolTip().add(Component.literal("Infinite Invisibility (hides armor except boots) until you touch a liquid.").withStyle(ChatFormatting.GRAY));
                             break;
                         case "guardian_golem":
                             event.getToolTip().add(Component.literal("Summons an iron golem to protect you when hit (max 1 min). Recharges with Iron Ingot.").withStyle(ChatFormatting.DARK_GREEN));
@@ -119,6 +124,42 @@ public class ClientModEvents {
                     }
                 } else {
                     event.getToolTip().add(Component.literal("Hold [ALT] for details").withStyle(ChatFormatting.DARK_GRAY));
+                }
+            }
+        }
+
+        private static final java.util.Map<Player, NonNullList<ItemStack>> savedArmor = new WeakHashMap<>();
+
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+        public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
+            Player player = event.getEntity();
+            if (player.hasEffect(MobEffects.INVISIBILITY) &&
+                    CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GLASS_CLOTH.get()).isPresent()) {
+
+                NonNullList<ItemStack> currentArmor = player.getInventory().armor;
+                NonNullList<ItemStack> copy = NonNullList.withSize(4, ItemStack.EMPTY);
+
+                for (int i = 0; i < 4; i++) {
+                    copy.set(i, currentArmor.get(i));
+                }
+                savedArmor.put(player, copy);
+
+                // Hide Helmet (3), Chestplate (2), Leggings (1). Keep Boots (0) intact!
+                player.getInventory().armor.set(3, ItemStack.EMPTY);
+                player.getInventory().armor.set(2, ItemStack.EMPTY);
+                player.getInventory().armor.set(1, ItemStack.EMPTY);
+            }
+        }
+
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public static void onPlayerRenderPost(RenderPlayerEvent.Post event) {
+            Player player = event.getEntity();
+            if (savedArmor.containsKey(player)) {
+                NonNullList<ItemStack> copy = savedArmor.remove(player);
+                if (copy != null) {
+                    for (int i = 0; i < 4; i++) {
+                        player.getInventory().armor.set(i, copy.get(i));
+                    }
                 }
             }
         }

@@ -38,5 +38,23 @@
         "stream": false
       }
     ]
+  },
+  "hourglass_custom_1": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_1"
+    ]
+  },
+  "hourglass_custom_2": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_2"
+    ]
+  },
+  "hourglass_custom_3": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_3"
+    ]
   }
 }
