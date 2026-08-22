@@ -71,11 +71,11 @@ public class ModItems {
             () -> new WardenBeamItem());
 
     public static final RegistryObject<Item> SAVIRITIUM_COMPOUND = ITEMS.register("saviritium_compound",
-            () -> new Item(new Item.Properties().stacksTo(16)));
+            () -> new Item(new Item.Properties().stacksTo(16).fireResistant()));
 
     public static final RegistryObject<Item> SAVIRITIUM_COMPOUND_BLOCK_ITEM = ITEMS.register("saviritium_compound_block",
-            () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16)));
+            () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16).fireResistant()));
 
     public static final RegistryObject<net.minecraft.world.item.Item> SAVIRITIUM_GOLEM_SPAWN_EGG = ITEMS.register("saviritium_golem_spawn_egg",
-            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties()));
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties().stacksTo(16).fireResistant()));
 }
