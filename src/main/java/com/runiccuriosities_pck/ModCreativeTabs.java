@@ -20,6 +20,18 @@ public class ModCreativeTabs {
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND_BLOCK_ITEM.get());
                         pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
+                        // --- Saviritium Set ---
+                        pOutput.accept(ModItems.SAVIRITIUM_UPGRADE_SMITHING_TEMPLATE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_SWORD.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_PICKAXE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_AXE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_SHOVEL.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_HOE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_HELMET.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_CHESTPLATE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_LEGGINGS.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_BOOTS.get());
+                        
                         pOutput.accept(ModItems.EXAMPLE_ITEM.get());
                         pOutput.accept(ModItems.GOLDEN_EMERALD.get());
                         pOutput.accept(ModItems.EGG_OF_GLUTTONY.get());

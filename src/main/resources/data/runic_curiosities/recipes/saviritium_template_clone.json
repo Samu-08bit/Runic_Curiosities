@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#S#",
+    "#C#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:diamond"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_upgrade_smithing_template"
+    },
+    "C": {
+      "item": "runic_curiosities:saviritium_compound"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:saviritium_upgrade_smithing_template",
+    "count": 2
+  }
+}

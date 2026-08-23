@@ -78,4 +78,71 @@ public class ModItems {
 
     public static final RegistryObject<net.minecraft.world.item.Item> SAVIRITIUM_GOLEM_SPAWN_EGG = ITEMS.register("saviritium_golem_spawn_egg",
             () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties().stacksTo(16).fireResistant()));
+
+    // ==========================================
+    // SMITHING TEMPLATE
+    // ==========================================
+    private static final java.util.List<net.minecraft.resources.ResourceLocation> SAVIRITIUM_UPGRADE_EMPTY_SLOTS = java.util.List.of(
+            new net.minecraft.resources.ResourceLocation("item/empty_armor_slot_helmet"),
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_sword"),
+            new net.minecraft.resources.ResourceLocation("item/empty_armor_slot_chestplate"),
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_pickaxe"),
+            new net.minecraft.resources.ResourceLocation("item/empty_armor_slot_leggings"),
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_axe"),
+            new net.minecraft.resources.ResourceLocation("item/empty_armor_slot_boots"),
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_hoe"),
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_shovel"));
+
+    private static final java.util.List<net.minecraft.resources.ResourceLocation> SAVIRITIUM_UPGRADE_ADDITIONS_SLOTS = java.util.List.of(
+            new net.minecraft.resources.ResourceLocation("item/empty_slot_ingot"));
+
+    public static final RegistryObject<Item> SAVIRITIUM_UPGRADE_SMITHING_TEMPLATE = ITEMS.register("saviritium_upgrade_smithing_template",
+            () -> new net.minecraft.world.item.SmithingTemplateItem(
+                    net.minecraft.network.chat.Component.translatable("item.runic_curiosities.smithing_template.saviritium_upgrade.applies_to").withStyle(net.minecraft.ChatFormatting.BLUE),
+                    net.minecraft.network.chat.Component.translatable("item.runic_curiosities.smithing_template.saviritium_upgrade.ingredients").withStyle(net.minecraft.ChatFormatting.BLUE),
+                    net.minecraft.network.chat.Component.translatable("upgrade.runic_curiosities.saviritium_upgrade").withStyle(net.minecraft.ChatFormatting.GRAY),
+                    net.minecraft.network.chat.Component.translatable("item.runic_curiosities.smithing_template.saviritium_upgrade.base_slot_description"),
+                    net.minecraft.network.chat.Component.translatable("item.runic_curiosities.smithing_template.saviritium_upgrade.additions_slot_description"),
+                    SAVIRITIUM_UPGRADE_EMPTY_SLOTS,
+                    SAVIRITIUM_UPGRADE_ADDITIONS_SLOTS
+            ) {
+                // Sovrascriviamo la resistenza al fuoco direttamente sulla classe!
+                @Override
+                public boolean isFireResistant() {
+                    return true;
+                }
+            });
+
+    // ==========================================
+    // UTENSILI E ARMI IN SAVIRITIUM
+    // ==========================================
+    public static final RegistryObject<Item> SAVIRITIUM_SWORD = ITEMS.register("saviritium_sword",
+            () -> new net.minecraft.world.item.SwordItem(ModMaterials.SAVIRITIUM_TIER, 3, -2.4F, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_PICKAXE = ITEMS.register("saviritium_pickaxe",
+            () -> new net.minecraft.world.item.PickaxeItem(ModMaterials.SAVIRITIUM_TIER, 1, -2.8F, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_AXE = ITEMS.register("saviritium_axe",
+            () -> new net.minecraft.world.item.AxeItem(ModMaterials.SAVIRITIUM_TIER, 5.0F, -3.0F, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_SHOVEL = ITEMS.register("saviritium_shovel",
+            () -> new net.minecraft.world.item.ShovelItem(ModMaterials.SAVIRITIUM_TIER, 1.5F, -3.0F, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_HOE = ITEMS.register("saviritium_hoe",
+            () -> new net.minecraft.world.item.HoeItem(ModMaterials.SAVIRITIUM_TIER, -4, 0.0F, new Item.Properties().fireResistant()));
+
+    // ==========================================
+    // ARMATURA IN SAVIRITIUM
+    // ==========================================
+    public static final RegistryObject<Item> SAVIRITIUM_HELMET = ITEMS.register("saviritium_helmet",
+            () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.HELMET, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_CHESTPLATE = ITEMS.register("saviritium_chestplate",
+            () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_LEGGINGS = ITEMS.register("saviritium_leggings",
+            () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.LEGGINGS, new Item.Properties().fireResistant()));
+
+    public static final RegistryObject<Item> SAVIRITIUM_BOOTS = ITEMS.register("saviritium_boots",
+            () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.BOOTS, new Item.Properties().fireResistant()));
 }

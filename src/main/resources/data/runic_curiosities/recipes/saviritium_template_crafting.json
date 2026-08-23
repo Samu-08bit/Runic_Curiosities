@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S",
+    "N"
+  ],
+  "key": {
+    "S": {
+      "item": "runiccuriosities:saviritium_compound"
+    },
+    "N": {
+      "item": "minecraft:netherite_upgrade_smithing_template"
+    }
+  },
+  "result": {
+    "item": "runiccuriosities:saviritium_upgrade_smithing_template",
+    "count": 1
+  }
+}
