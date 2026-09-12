@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPG",
+    "SSS",
+    "ISI"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:prismarine"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "I": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:neptunes_helmet",
+    "count": 1
+  }
+}

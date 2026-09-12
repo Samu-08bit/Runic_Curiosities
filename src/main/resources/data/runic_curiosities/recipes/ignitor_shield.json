@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SNH",
+    "NXP",
+    "HPN"
+  ],
+  "key": {
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "H": {
+      "item": "minecraft:shield"
+    },
+    "X": {
+      "item": "minecraft:nether_star"
+    },
+    "P": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:ignitor_shield",
+    "count": 1
+  }
+}

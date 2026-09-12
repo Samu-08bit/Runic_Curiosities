@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "E E",
+    "C C"
+  ],
+  "key": {
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "E": {
+      "item": "minecraft:spider_eye"
+    },
+    "C": {
+      "item": "minecraft:cobweb"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:spider_boots",
+    "count": 1
+  }
+}

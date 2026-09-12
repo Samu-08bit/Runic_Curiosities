@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "runic_curiosities:item/saviritium_axe"
+  }
+}

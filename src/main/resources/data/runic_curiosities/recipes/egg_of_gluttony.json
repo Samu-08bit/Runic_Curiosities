@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " E ",
+    "EKE",
+    "ESE"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:egg"
+    },
+    "K": {
+      "item": "minecraft:cake"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:egg_of_gluttony",
+    "count": 1
+  }
+}

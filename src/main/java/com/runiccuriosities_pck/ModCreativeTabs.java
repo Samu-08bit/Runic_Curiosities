@@ -1,0 +1,79 @@
+package com.runiccuriosities_pck;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
+
+public class ModCreativeTabs {
+    // In NeoForge 1.21.1 si continua a usare Registries.CREATIVE_MODE_TAB
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, RunicCuriosities.MODID);
+
+    // RegistryObject diventa Supplier
+    public static final Supplier<CreativeModeTab> RUNIC_CURIOSITIES_TAB = CREATIVE_MODE_TABS.register("runic_curiosities_tab",
+            () -> CreativeModeTab.builder()
+                    .icon(() -> new ItemStack(ModItems.SAVIRITIUM_COMPOUND.get()))
+                    .title(Component.translatable("creativetab.runic_curiosities_tab"))
+                    .displayItems((pParameters, pOutput) -> {
+                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_COMPOUND_BLOCK_ITEM.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
+
+                        // --- Saviritium Set ---
+                        pOutput.accept(ModItems.SAVIRITIUM_UPGRADE_SMITHING_TEMPLATE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_SWORD.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_PICKAXE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_AXE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_SHOVEL.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_HOE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_HELMET.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_CHESTPLATE.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_LEGGINGS.get());
+                        pOutput.accept(ModItems.SAVIRITIUM_BOOTS.get());
+
+                        pOutput.accept(ModItems.EXAMPLE_ITEM.get());
+                        pOutput.accept(ModItems.GOLDEN_EMERALD.get());
+                        pOutput.accept(ModItems.EGG_OF_GLUTTONY.get());
+                        pOutput.accept(ModItems.SCARLET_EYES.get());
+                        pOutput.accept(ModItems.IGNITOR_SHIELD.get());
+                        pOutput.accept(ModItems.RECHARGING_BREAD.get());
+                        pOutput.accept(ModItems.GLASS_CLOTH.get());
+                        pOutput.accept(ModItems.GUARDIAN_GOLEM.get());
+                        pOutput.accept(ModItems.CAR_BOMB.get());
+                        pOutput.accept(ModItems.ENERGY_DRINK.get());
+                        pOutput.accept(ModItems.TIME_HOURGLASS.get());
+                        pOutput.accept(ModItems.SPONGE_RING.get());
+                        pOutput.accept(ModItems.VIPERS_EMBRACE.get());
+
+                        // =====================================
+                        // 1.21.1: Incantiamo il cuore usando i parametri (pParameters)
+                        // =====================================
+                        ItemStack heartStack = new ItemStack(ModItems.HEART_OF_RESOLUTION.get());
+                        var enchantmentRegistry = pParameters.holders().lookup(Registries.ENCHANTMENT);
+                        if (enchantmentRegistry.isPresent()) {
+                            Holder<Enchantment> bindingCurse = enchantmentRegistry.get().getOrThrow(Enchantments.BINDING_CURSE);
+                            heartStack.enchant(bindingCurse, 1);
+                        }
+                        pOutput.accept(heartStack);
+
+                        pOutput.accept(ModItems.WARDEN_ANTENNAS.get());
+                        pOutput.accept(ModItems.SPIDER_BOOTS.get());
+                        pOutput.accept(ModItems.FAIRY_WINGS.get());
+                        pOutput.accept(ModItems.NEPTUNES_HELMET.get());
+                        pOutput.accept(ModItems.RANDOM_CAULDRON.get());
+                        pOutput.accept(ModItems.WARDEN_BEAM.get());
+                    })
+                    .build());
+
+    public static void register(IEventBus eventBus) {
+        CREATIVE_MODE_TABS.register(eventBus);
+    }
+}

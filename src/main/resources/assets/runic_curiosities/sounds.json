@@ -1,0 +1,60 @@
+{
+  "laser_shoot": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.laser_shoot",
+    "sounds": [
+      {
+        "name": "runic_curiosities:laser_shoot",
+        "stream": false
+      }
+    ]
+  },
+  "golem_death": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_death",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_death",
+        "stream": false
+      }
+    ]
+  },
+  "golem_hurt": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_hurt",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "golem_tame": {
+    "category": "neutral",
+    "subtitle": "subtitles.runic_curiosities.golem_tame",
+    "sounds": [
+      {
+        "name": "runic_curiosities:golem_tame",
+        "stream": false
+      }
+    ]
+  },
+  "hourglass_custom_1": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_1"
+    ]
+  },
+  "hourglass_custom_2": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_2"
+    ]
+  },
+  "hourglass_custom_3": {
+    "category": "player",
+    "sounds": [
+      "runiccuriosities:custom/custom_3"
+    ]
+  }
+}

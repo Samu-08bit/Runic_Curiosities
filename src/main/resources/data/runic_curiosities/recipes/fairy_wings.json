@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EWG",
+    " S ",
+    "R D"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:emerald_block"
+    },
+    "W": {
+      "item": "minecraft:elytra"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:fairy_wings",
+    "count": 1
+  }
+}

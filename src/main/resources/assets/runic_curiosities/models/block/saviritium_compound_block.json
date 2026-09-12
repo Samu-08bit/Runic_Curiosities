@@ -1,0 +1,21 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "runic_curiosities:block/saviritium_compound_block_texture",
+    "texture": "runic_curiosities:block/saviritium_compound_block_texture"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": { "uv": [ 0, 0, 4, 4 ], "texture": "#texture", "cullface": "north" },
+        "east":  { "uv": [ 4, 0, 8, 4 ], "texture": "#texture", "cullface": "east" },
+        "south": { "uv": [ 0, 4, 4, 8 ], "texture": "#texture", "cullface": "south" },
+        "west":  { "uv": [ 4, 4, 8, 8 ], "texture": "#texture", "cullface": "west" },
+        "up":    { "uv": [ 8, 0, 12, 4 ], "texture": "#texture", "cullface": "up" },
+        "down":  { "uv": [ 0, 8, 4, 12 ], "texture": "#texture", "cullface": "down" }
+      }
+    }
+  ]
+}

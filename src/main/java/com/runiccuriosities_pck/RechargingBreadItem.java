@@ -1,0 +1,36 @@
+package com.runiccuriosities_pck;
+
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+
+public class RechargingBreadItem extends TalismanItem {
+    public RechargingBreadItem(Properties properties) {
+        super(properties);
+    }
+
+    // Forces the game to show the durability/discharge bar
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return true;
+    }
+
+    // Calculates the bar width (from 0 to 13 pixels in the Minecraft engine)
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        // 1.21.1: Uso dei Custom Data
+        CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        if (customData.contains("Charge")) {
+            int charge = customData.copyTag().getInt("Charge");
+            // 1200 is the maximum charge (1 minute)
+            return Math.round((float) charge * 13.0F / 1200.0F);
+        }
+        return 13;
+    }
+
+    // Sets the bar color (a nice orange/gold bread style)
+    @Override
+    public int getBarColor(ItemStack stack) {
+        return 0xFFAA00;
+    }
+}

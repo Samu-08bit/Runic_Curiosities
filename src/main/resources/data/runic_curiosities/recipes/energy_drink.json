@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ISN",
+    "RMR",
+    "IWI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "runic_curiosities:saviritium_compound"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "M": {
+      "item": "minecraft:milk_bucket"
+    },
+    "W": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:energy_drink",
+    "count": 1
+  }
+}
