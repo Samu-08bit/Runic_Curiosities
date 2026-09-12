@@ -1,0 +1,473 @@
+package com.runiccuriosities_pck;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.EnumSet;
+import java.util.List;
+
+public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, RangedAttackMob {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public SimpleContainer inventory;
+
+    private static final EntityDataAccessor<Boolean> DATA_PICKING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_SHOOTING = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_STANDING_UP = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_STAYING = SynchedEntityData.defineId(SaviritiumGolemEntity.class, EntityDataSerializers.BOOLEAN);
+
+    private int standUpTick = 0;
+
+    public SaviritiumGolemEntity(EntityType<? extends TamableAnimal> entityType, Level level) {
+        super(entityType, level);
+        this.inventory = new SimpleContainer(27);
+    }
+
+    public boolean isFood(ItemStack pStack) {
+        return false;
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return TamableAnimal.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 60.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.4D)
+                .add(Attributes.ARMOR, 5.0D)
+                .add(Attributes.ATTACK_DAMAGE, 10.0D)
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D);
+    }
+
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_PICKING_UP, false);
+        builder.define(DATA_SHOOTING, false);
+        builder.define(DATA_STANDING_UP, false);
+        builder.define(DATA_STAYING, false);
+    }
+
+    public boolean isPickingUp() { return this.entityData.get(DATA_PICKING_UP); }
+    public void setPickingUp(boolean pickingUp) { this.entityData.set(DATA_PICKING_UP, pickingUp); }
+
+    public boolean isShooting() { return this.entityData.get(DATA_SHOOTING); }
+    public void setShooting(boolean shooting) { this.entityData.set(DATA_SHOOTING, shooting); }
+
+    public boolean isStandingUp() { return this.entityData.get(DATA_STANDING_UP); }
+    public void setStandingUp(boolean standingUp) { this.entityData.set(DATA_STANDING_UP, standingUp); }
+    public void setStandUpTick(int ticks) { this.standUpTick = ticks; }
+
+    public boolean isStaying() { return this.entityData.get(DATA_STAYING); }
+    public void setStaying(boolean staying) { this.entityData.set(DATA_STAYING, staying); }
+
+    protected float getStandingEyeHeight(net.minecraft.world.entity.Pose pose, net.minecraft.world.entity.EntityDimensions dimensions) {
+        return 0.65F;
+    }
+
+    @Nullable
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
+        return null;
+    }
+
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide && this.isStandingUp()) {
+            this.navigation.stop();
+            if (this.standUpTick > 0) {
+                this.standUpTick--;
+            } else {
+                this.setStandingUp(false);
+            }
+        }
+    }
+
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new GolemSitOrStayGoal(this));
+        this.goalSelector.addGoal(2, new GolemLaserAttackGoal(this));
+        this.goalSelector.addGoal(3, new GolemPickupItemGoal(this));
+        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.2D, 10.0F, 2.0F));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+
+        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
+    }
+
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (!this.isTame()) {
+            if (!this.level().isClientSide) {
+                this.tame(player);
+                this.navigation.stop();
+                this.setCustomName(Component.literal("Saviritium Golem - " + player.getName().getString()));
+                this.setCustomNameVisible(true);
+                this.playSound(ModSounds.GOLEM_TAME.get(), 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+
+        if (this.isOwnedBy(player)) {
+            if (player.isShiftKeyDown()) {
+                if (!this.level().isClientSide) {
+                    player.openMenu(new SimpleMenuProvider(
+                            (id, playerInv, p) -> ChestMenu.threeRows(id, playerInv, this.inventory),
+                            Component.literal("Saviritium Golem")
+                    ));
+                }
+                return InteractionResult.sidedSuccess(this.level().isClientSide);
+            } else if (player.getItemInHand(hand).isEmpty()) {
+                if (this.level().isClientSide) {
+                    player.displayClientMessage(Component.literal("Menu temporaneamente disattivato per via della build."), false);
+                }
+                return InteractionResult.sidedSuccess(this.level().isClientSide);
+            }
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putBoolean("IsStaying", this.isStaying());
+
+        if (this.inventory != null) {
+            ListTag listTag = new ListTag();
+            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+                ItemStack itemStack = this.inventory.getItem(i);
+                if (!itemStack.isEmpty()) {
+                    CompoundTag itemTag = new CompoundTag();
+                    itemTag.putByte("Slot", (byte) i);
+                    itemStack.save(this.registryAccess(), itemTag);
+                    listTag.add(itemTag);
+                }
+            }
+            compound.put("Inventory", listTag);
+        }
+    }
+
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("IsStaying")) {
+            this.setStaying(compound.getBoolean("IsStaying"));
+        }
+
+        if (this.inventory == null) {
+            this.inventory = new SimpleContainer(27);
+        }
+        if (compound.contains("Inventory", 9)) {
+            ListTag listTag = compound.getList("Inventory", 10);
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag itemTag = listTag.getCompound(i);
+                int slot = itemTag.getByte("Slot") & 255;
+                if (slot >= 0 && slot < this.inventory.getContainerSize()) {
+                    net.minecraft.world.item.ItemStack.parse(this.registryAccess(), itemTag).ifPresent(item -> this.inventory.setItem(slot, item));
+                }
+            }
+        }
+    }
+
+    protected void dropEquipment() {
+        super.dropEquipment();
+        if (this.inventory != null) {
+            for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+                ItemStack itemStack = this.inventory.getItem(i);
+                if (!itemStack.isEmpty()) {
+                    this.spawnAtLocation(itemStack);
+                }
+            }
+        }
+        this.spawnAtLocation(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
+    }
+
+    public boolean canHoldItem(ItemStack stack) {
+        for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+            ItemStack slotStack = this.inventory.getItem(i);
+            if (slotStack.isEmpty()) return true;
+            if (ItemStack.isSameItemSameComponents(slotStack, stack) && slotStack.getCount() < slotStack.getMaxStackSize()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canAttack(LivingEntity target) {
+        if (target instanceof SaviritiumGolemEntity otherGolem) {
+            if (this.isTame() && otherGolem.isTame()) {
+                if (this.getOwnerUUID() != null && this.getOwnerUUID().equals(otherGolem.getOwnerUUID())) {
+                    return false;
+                }
+            }
+        }
+        return super.canAttack(target);
+    }
+
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        GolemLaserEntity laser = new GolemLaserEntity(ModEntities.GOLEM_LASER.get(), this, this.level());
+        double d0 = target.getX() - this.getX();
+        double d1 = target.getY(0.5D) - laser.getY();
+        double d2 = target.getZ() - this.getZ();
+        laser.shoot(d0, d1, d2, 1.5F, 0.0F);
+        laser.setBaseDamage(14.0D);
+        this.playSound(ModSounds.LASER_SHOOT.get(), 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level().addFreshEntity(laser);
+    }
+
+    protected net.minecraft.sounds.SoundEvent getDeathSound() {
+        return ModSounds.GOLEM_DEATH.get();
+    }
+
+    protected net.minecraft.sounds.SoundEvent getHurtSound(net.minecraft.world.damagesource.DamageSource damageSourceIn) {
+        return ModSounds.GOLEM_HURT.get();
+    }
+
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "controller", 5, event -> {
+            if (this.isInSittingPose()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.sit"));
+                return PlayState.CONTINUE;
+            }
+            if (this.isStandingUp()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.stand"));
+                return PlayState.CONTINUE;
+            }
+            if (this.isShooting()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.attack"));
+                return PlayState.CONTINUE;
+            }
+            if (this.isPickingUp()) {
+                event.getController().setAnimation(RawAnimation.begin().thenPlay("animation.saviritium_golem.pickup"));
+                return PlayState.CONTINUE;
+            }
+            if (event.isMoving()) {
+                event.getController().setAnimation(RawAnimation.begin().thenLoop("animation.saviritium_golem.walk"));
+                return PlayState.CONTINUE;
+            }
+            event.getController().setAnimation(RawAnimation.begin().thenLoop("animation.saviritium_golem.idle"));
+            return PlayState.CONTINUE;
+        }));
+    }
+
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
+    }
+
+    class GolemLaserAttackGoal extends Goal {
+        private final SaviritiumGolemEntity golem;
+        private LivingEntity target;
+        private int attackTick = -1;
+        private int cooldown = 0;
+
+        public GolemLaserAttackGoal(SaviritiumGolemEntity golem) {
+            this.golem = golem;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            if (this.golem.isOrderedToSit()) return false;
+            LivingEntity livingentity = this.golem.getTarget();
+            if (livingentity != null && livingentity.isAlive()) {
+                this.target = livingentity;
+                return true;
+            }
+            return false;
+        }
+
+        public boolean canContinueToUse() {
+            return (this.canUse() || this.attackTick > 0) && this.target != null && this.target.isAlive();
+        }
+
+        public void start() {
+            this.attackTick = -1;
+            this.cooldown = 10;
+        }
+
+        public void stop() {
+            this.target = null;
+            this.attackTick = -1;
+            this.golem.setShooting(false);
+        }
+
+        public void tick() {
+            if (this.target == null || !this.target.isAlive()) return;
+            double distSq = this.golem.distanceToSqr(this.target);
+            boolean canSee = this.golem.getSensing().hasLineOfSight(this.target);
+            this.golem.getLookControl().setLookAt(this.target, 30.0F, 30.0F);
+
+            if (distSq < 25.0D) {
+                Vec3 dir = this.golem.position().subtract(this.target.position()).normalize();
+                Vec3 awayPos = this.golem.position().add(dir.scale(4.0));
+                this.golem.getNavigation().moveTo(awayPos.x, awayPos.y, awayPos.z, 1.4D);
+            } else if (distSq > 144.0D || !canSee) {
+                this.golem.getNavigation().moveTo(this.target, 1.25D);
+            } else {
+                this.golem.getNavigation().stop();
+            }
+
+            if (this.cooldown > 0) this.cooldown--;
+
+            if (this.attackTick < 0 && this.cooldown <= 0 && canSee) {
+                this.golem.setShooting(true);
+                this.attackTick = 1;
+            }
+
+            if (this.attackTick > 0) {
+                this.attackTick++;
+                if (this.attackTick == 35 && !this.golem.level().isClientSide) {
+                    this.golem.performRangedAttack(this.target, 1.0f);
+                }
+                if (this.attackTick >= 60) {
+                    this.golem.setShooting(false);
+                    this.attackTick = -1;
+                    this.cooldown = 15;
+                }
+            }
+        }
+    }
+
+    class GolemPickupItemGoal extends Goal {
+        private final SaviritiumGolemEntity golem;
+        private ItemEntity targetItem;
+        private int pickupTick;
+        private int stuckTimeout;
+
+        public GolemPickupItemGoal(SaviritiumGolemEntity golem) {
+            this.golem = golem;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            if (this.golem.isOrderedToSit() || !this.golem.isTame()) return false;
+            if (this.golem.isPickingUp() || this.golem.isShooting()) return false;
+            if (this.golem.getTarget() != null) return false;
+
+            List<ItemEntity> items = this.golem.level().getEntitiesOfClass(
+                    ItemEntity.class,
+                    this.golem.getBoundingBox().inflate(8.0D, 3.0D, 8.0D),
+                    item -> item.isAlive() && !item.hasPickUpDelay() && this.golem.canHoldItem(item.getItem())
+            );
+
+            if (items.isEmpty()) return false;
+            for (ItemEntity item : items) {
+                net.minecraft.world.level.pathfinder.Path path = this.golem.getNavigation().createPath(item, 0);
+                if (path != null && path.canReach()) {
+                    this.targetItem = item;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean canContinueToUse() {
+            if (this.golem.isOrderedToSit()) return false;
+            if (this.golem.getTarget() != null) return false;
+            if (this.golem.isPickingUp()) { return this.pickupTick < 65; }
+            if (this.stuckTimeout > 60) return false;
+            return this.targetItem != null && this.targetItem.isAlive() && this.golem.canHoldItem(this.targetItem.getItem());
+        }
+
+        public void start() {
+            this.pickupTick = 0;
+            this.stuckTimeout = 0;
+            this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
+        }
+
+        public void stop() {
+            this.targetItem = null;
+            this.golem.setPickingUp(false);
+            this.pickupTick = 0;
+            this.stuckTimeout = 0;
+            this.golem.getNavigation().stop();
+        }
+
+        public void tick() {
+            if (this.golem.isPickingUp()) {
+                this.golem.getNavigation().stop();
+                this.pickupTick++;
+
+                if (!this.golem.level().isClientSide && this.pickupTick == 35 && this.targetItem != null && this.targetItem.isAlive()) {
+                    ItemStack stackToPickup = this.targetItem.getItem().copy();
+                    ItemStack remainder = this.golem.inventory.addItem(stackToPickup);
+
+                    if (remainder.getCount() < this.targetItem.getItem().getCount()) {
+                        this.golem.take(this.targetItem, this.targetItem.getItem().getCount() - remainder.getCount());
+                        this.golem.playSound(net.minecraft.sounds.SoundEvents.ITEM_PICKUP, 0.2F, (this.golem.getRandom().nextFloat() - this.golem.getRandom().nextFloat()) * 0.2F + 1.0F);
+                        if (remainder.isEmpty()) {
+                            this.targetItem.discard();
+                        } else {
+                            this.targetItem.setItem(remainder);
+                        }
+                    }
+                }
+                return;
+            }
+
+            if (this.targetItem == null || !this.targetItem.isAlive()) return;
+            this.golem.getLookControl().setLookAt(this.targetItem, 30.0F, 30.0F);
+            double distance = this.golem.distanceToSqr(this.targetItem);
+
+            if (distance > 4.0D) {
+                if (this.golem.getNavigation().isDone()) {
+                    this.stuckTimeout += 2;
+                    this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
+                } else {
+                    this.stuckTimeout++;
+                }
+            } else {
+                this.golem.getNavigation().stop();
+                this.golem.setPickingUp(true);
+                this.pickupTick = 0;
+                this.stuckTimeout = 0;
+            }
+        }
+    }
+
+    class GolemSitOrStayGoal extends Goal {
+        private final SaviritiumGolemEntity golem;
+
+        public GolemSitOrStayGoal(SaviritiumGolemEntity golem) {
+            this.golem = golem;
+            this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
+        }
+
+        public boolean canUse() { return this.golem.isOrderedToSit(); }
+
+        public void start() { this.golem.getNavigation().stop(); }
+
+        public void tick() { this.golem.getNavigation().stop(); }
+    }
+}
