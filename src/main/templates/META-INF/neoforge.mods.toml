@@ -17,6 +17,8 @@ license="${mod_license}"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 
+logoFile="icon.png"
+
 # The modid of the mod
 modId="${mod_id}" #mandatory
 

@@ -1,14 +1,17 @@
 {
+  "entities": [
+    "minecraft:player"
+  ],
   "slots": [
-    "curios:head",
-    "curios:necklace",
-    "curios:body",
-    "curios:back",
-    "curios:belt",
-    "curios:hands",
-    "curios:ring",
-    "curios:bracelet",
-    "curios:charm",
-    "runic_curiosities:boots"
+    "head",
+    "necklace",
+    "body",
+    "back",
+    "belt",
+    "hands",
+    "ring",
+    "bracelet",
+    "charm",
+    "boots"
   ]
 }
