@@ -1,6 +1,7 @@
 package com.runiccuriosities_pck;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -39,13 +40,46 @@ public class ModCommands {
     public static final Supplier<AttachmentType<Integer>> RUNIC_TIME_FREEZE = ATTACHMENT_TYPES.register("runic_time_freeze", () -> AttachmentType.builder(() -> 0).build());
     public static final Supplier<AttachmentType<Boolean>> HAD_GRAVITY_DISABLED = ATTACHMENT_TYPES.register("had_gravity_disabled", () -> AttachmentType.builder(() -> false).build());
     public static final Supplier<AttachmentType<Boolean>> HAD_AI_DISABLED = ATTACHMENT_TYPES.register("had_ai_disabled", () -> AttachmentType.builder(() -> false).build());
+    public static final Supplier<AttachmentType<Boolean>> SCARLET_EYES_EFFECT = ATTACHMENT_TYPES.register("scarlet_eyes_effect", () -> AttachmentType.builder(() -> true)
+            .serialize(com.mojang.serialization.Codec.BOOL)
+            .sync(net.minecraft.network.codec.ByteBufCodecs.BOOL)
+            .copyOnDeath()
+            .build());
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
         dispatcher.register(Commands.literal("runic_curiosities")
-                .then(Commands.literal("time_hourglass").then(Commands.literal("timestop").requires(source -> source.hasPermission(2)).executes(context -> executeTimeStop(context.getSource())))
+                .then(Commands.literal("scarlet_eyes")
+                        .then(Commands.literal("effect")
+                                .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                        .executes(context -> setScarletEyesEffect(context.getSource(), BoolArgumentType.getBool(context, "enabled"))))
+                                .executes(context -> getScarletEyesEffect(context.getSource()))))
+                .then(Commands.literal("time_hourglass")
+                        .then(Commands.literal("timestop").requires(source -> source.hasPermission(2)).executes(context -> executeTimeStop(context.getSource())))
                         .then(Commands.literal("soundlist").executes(ModCommands::listSounds).then(Commands.argument("sound_name", StringArgumentType.word()).suggests((context, builder) -> SharedSuggestionProvider.suggest(AVAILABLE_SOUNDS, builder)).executes(ModCommands::setSound)))));
+    }
+
+    private static int setScarletEyesEffect(CommandSourceStack source, boolean enabled) {
+        if (source.getEntity() instanceof ServerPlayer player) {
+            player.setData(SCARLET_EYES_EFFECT.get(), enabled);
+            source.sendSuccess(() -> Component.literal("Scarlet Eyes visual effect " + (enabled ? "enabled." : "disabled.")), false);
+            return 1;
+        } else {
+            source.sendFailure(Component.literal("Only a player can use this command!"));
+            return 0;
+        }
+    }
+
+    private static int getScarletEyesEffect(CommandSourceStack source) {
+        if (source.getEntity() instanceof ServerPlayer player) {
+            boolean enabled = !player.hasData(SCARLET_EYES_EFFECT.get()) || player.getData(SCARLET_EYES_EFFECT.get());
+            source.sendSuccess(() -> Component.literal("Scarlet Eyes visual effect is currently " + (enabled ? "enabled." : "disabled.") + ". Use /runic_curiosities scarlet_eyes effect <true|false> to toggle."), false);
+            return 1;
+        } else {
+            source.sendFailure(Component.literal("Only a player can use this command!"));
+            return 0;
+        }
     }
 
     private static int executeTimeStop(CommandSourceStack source) {
@@ -103,6 +137,9 @@ public class ModCommands {
         Player clone = event.getEntity();
         if (original.hasData(HOURGLASS_SOUND.get())) {
             clone.setData(HOURGLASS_SOUND.get(), original.getData(HOURGLASS_SOUND.get()));
+        }
+        if (original.hasData(SCARLET_EYES_EFFECT.get())) {
+            clone.setData(SCARLET_EYES_EFFECT.get(), original.getData(SCARLET_EYES_EFFECT.get()));
         }
     }
 

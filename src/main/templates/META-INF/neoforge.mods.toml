@@ -49,9 +49,9 @@ versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 
-# ==========================================
+
 # DEPENDENCIES (CURIOS E GECKOLIB)
-# ==========================================
+
 [[dependencies.${mod_id}]]
 modId="curios"
 type="required"

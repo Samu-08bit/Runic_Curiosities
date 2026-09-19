@@ -2,6 +2,7 @@ package com.runiccuriosities_pck;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -29,7 +30,6 @@ import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,7 +37,6 @@ import net.minecraft.resources.ResourceLocation;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -71,7 +70,7 @@ public class ModEvents {
             }
         }
 
-        // Solo lato server per la logica principale degli oggetti
+        // Server-side only for talisman logic
         if (!player.level().isClientSide) {
             enforceUniqueCurio(player, ModItems.EXAMPLE_ITEM.get());
             enforceUniqueCurio(player, ModItems.GOLDEN_EMERALD.get());
@@ -99,9 +98,33 @@ public class ModEvents {
                 player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false, true));
             }
 
-            // 2. Golden Emerald
+            // 2. Golden Emerald (Hero of the Village + Tolerated by the Piglin)
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GOLDEN_EMERALD.get()).isPresent()) {
                 player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 40, 0, true, false, true));
+                player.addEffect(new MobEffectInstance(ModEffects.TOLERATED_BY_PIGLINS, 40, 0, true, false, true));
+
+                // Calms nearby non-aggroed Piglins and clears hostile memory modules
+                AABB area = player.getBoundingBox().inflate(24.0D);
+                List<Piglin> piglins = player.level().getEntitiesOfClass(Piglin.class, area);
+                for (Piglin piglin : piglins) {
+                    if (piglin.getLastHurtByMob() != player) {
+                        if (piglin.getTarget() == player) {
+                            piglin.setTarget(null);
+                        }
+                        if (piglin.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET) &&
+                                piglin.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) == player) {
+                            piglin.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+                        }
+                        if (piglin.getBrain().hasMemoryValue(MemoryModuleType.ANGRY_AT) &&
+                                piglin.getBrain().getMemory(MemoryModuleType.ANGRY_AT).orElse(null) == player.getUUID()) {
+                            piglin.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
+                        }
+                        if (piglin.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD) &&
+                                piglin.getBrain().getMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD).orElse(null) == player) {
+                            piglin.getBrain().eraseMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
+                        }
+                    }
+                }
             }
 
             // 3. Egg of Gluttony
@@ -119,7 +142,7 @@ public class ModEvents {
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
             }
 
-            // 6. Recharging Bread (1.21.1 Custom Data update)
+            // 6. Recharging Bread
             var breadOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.RECHARGING_BREAD.get());
             if (breadOpt.isPresent()) {
                 ItemStack breadStack = breadOpt.get().stack();
@@ -164,7 +187,7 @@ public class ModEvents {
                 }
             }
 
-            // 8. Guardian Golem (1.21.1 Custom Data update)
+            // 8. Guardian Golem
             var golemOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GUARDIAN_GOLEM.get());
             if (golemOpt.isPresent()) {
                 ItemStack golemStack = golemOpt.get().stack();
@@ -225,7 +248,7 @@ public class ModEvents {
                 golemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
             }
 
-            // 9. Car Bomb (1.21.1 Custom Data update)
+            // 9. Car Bomb
             var bombOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.CAR_BOMB.get());
             if (bombOpt.isPresent()) {
                 ItemStack bombStack = bombOpt.get().stack();
@@ -260,7 +283,7 @@ public class ModEvents {
                 player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 39, 0, true, false, true));
             }
 
-            // 11. Time Hourglass (1.21.1 Custom Data update)
+            // 11. Time Hourglass
             var hourglassOpt = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.TIME_HOURGLASS.get());
             if (hourglassOpt.isPresent()) {
                 ItemStack stack = hourglassOpt.get().stack();
@@ -319,7 +342,7 @@ public class ModEvents {
                 }
             }
 
-            // 14. Heart of Resolution (1.21.1 Attribute Update)
+            // 14. Heart of Resolution
             AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
             ResourceLocation heartId = ResourceLocation.fromNamespaceAndPath(RunicCuriosities.MODID, "heart_of_resolution");
 
@@ -605,15 +628,6 @@ public class ModEvents {
         }
     }
 
-   /* @SubscribeEvent
-    public static void onPiglinTarget(LivingChangeTargetEvent event) {
-        if (event.getEntity() instanceof Piglin && event.getNewTarget() instanceof Player player) {
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.GOLDEN_EMERALD.get()).isPresent()) {
-                event.setCanceled(true);
-            }
-        }
-    }*/
-
     @SubscribeEvent
     public static void onPlayerEat(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntity() instanceof Player player && !player.level().isClientSide) {
@@ -629,16 +643,6 @@ public class ModEvents {
                     }
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 6000, nextAmplifier, true, false, true));
                 }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
-        if (event.getEntity().hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
-            MobEffectInstance slowness = event.getEntity().getEffect(MobEffects.MOVEMENT_SLOWDOWN);
-            if (slowness != null && slowness.getAmplifier() >= 4) {
-                event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x, 0, event.getEntity().getDeltaMovement().z);
             }
         }
     }

@@ -41,6 +41,7 @@
   "key.runic_curiosities.warden_beam": "Warden Beam Ability",
   "item.runic_curiosities.time_hourglass": "Time Hourglass",
   "key.runic_curiosities.freeze_time": "Freeze Time Ability",
+  "effect.runic_curiosities.tolerated_by_piglins": "Tolerated by the Piglin",
   "key.categories.runic_curiosities": "Runic Curiosities Mod",
   "creativetab.runic_curiosities_tab": "Runic Curiosities"
 }

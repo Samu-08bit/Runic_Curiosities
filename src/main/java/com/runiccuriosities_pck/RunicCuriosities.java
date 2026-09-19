@@ -24,6 +24,7 @@ public class RunicCuriosities {
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
+        ModEffects.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
         // I nuovi registri della 1.21.1 che abbiamo aggiunto!

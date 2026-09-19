@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
@@ -12,8 +11,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.api.distmarker.Dist;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import net.minecraft.commands.Commands;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,6 +26,8 @@ import top.theillusivec4.curios.api.CuriosApi;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import java.awt.Color;
+import java.io.File;
+import java.nio.file.Files;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +37,72 @@ import java.util.WeakHashMap;
 
 public class ClientModEvents {
 
+    private static boolean scarletEyesEffectEnabled = true;
+
+    private static File getScarletConfigFile() {
+        return new File(Minecraft.getInstance().gameDirectory, "config/runic_curiosities_scarlet_eyes.txt");
+    }
+
+    public static boolean isScarletEyesEffectEnabled() {
+        return scarletEyesEffectEnabled;
+    }
+
+    public static void loadScarletEyesConfig() {
+        try {
+            File file = getScarletConfigFile();
+            if (file.exists()) {
+                String content = Files.readString(file.toPath()).trim();
+                scarletEyesEffectEnabled = Boolean.parseBoolean(content);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void saveScarletEyesConfig(boolean enabled) {
+        scarletEyesEffectEnabled = enabled;
+        try {
+            File file = getScarletConfigFile();
+            if (file.getParentFile() != null) {
+                file.getParentFile().mkdirs();
+            }
+            Files.writeString(file.toPath(), String.valueOf(enabled));
+        } catch (Exception ignored) {
+        }
+    }
+
     @EventBusSubscriber(modid = RunicCuriosities.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     public static class ClientForgeEvents {
+
+        @SubscribeEvent
+        public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
+            event.getDispatcher().register(
+                    Commands.literal("runic_curiosities")
+                            .then(Commands.literal("scarlet_eyes")
+                                    .then(Commands.literal("effect")
+                                            .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                    .executes(context -> {
+                                                        boolean enabled = BoolArgumentType.getBool(context, "enabled");
+                                                        saveScarletEyesConfig(enabled);
+                                                        context.getSource().sendSuccess(() ->
+                                                                        Component.literal("Scarlet Eyes visual effect " + (enabled ? "enabled." : "disabled."))
+                                                                                .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.RED),
+                                                                false
+                                                        );
+                                                        return 1;
+                                                    })
+                                            )
+                                            .executes(context -> {
+                                                context.getSource().sendSuccess(() ->
+                                                                Component.literal("Scarlet Eyes visual effect is currently " + (scarletEyesEffectEnabled ? "enabled." : "disabled.") + ". Use /runic_curiosities scarlet_eyes effect <true|false> to toggle.")
+                                                                        .withStyle(ChatFormatting.GRAY),
+                                                        false
+                                                );
+                                                return 1;
+                                            })
+                                    )
+                            )
+            );
+        }
 
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event) {
@@ -166,21 +235,22 @@ public class ClientModEvents {
         }
 
         @SubscribeEvent
-        public static void onRenderGuiOverlay(RenderGuiLayerEvent.Pre event) {
-            // Usa il ResourceLocation esatto in 1.21.1
-            if (event.getName().equals(ResourceLocation.withDefaultNamespace("vignette"))) {
+        public static void onRenderGuiOverlay(RenderGuiLayerEvent.Post event) {
+            // In NeoForge 1.21.1, camera overlays (including vignette) are under VanillaGuiLayers.CAMERA_OVERLAYS
+            if (VanillaGuiLayers.CAMERA_OVERLAYS.equals(event.getName()) || "camera_overlays".equals(event.getName().getPath())) {
+                if (!scarletEyesEffectEnabled) {
+                    return;
+                }
 
                 Minecraft mc = Minecraft.getInstance();
                 LocalPlayer player = mc.player;
 
                 if (player != null && mc.level != null) {
-                    if (player.hasEffect(MobEffects.NIGHT_VISION)) {
-                        boolean hasEyes = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SCARLET_EYES.get()).isPresent();
-                        if (hasEyes) {
-                            int width = event.getGuiGraphics().guiWidth();
-                            int height =  event.getGuiGraphics().guiHeight();
-                            event.getGuiGraphics().fill(RenderType.guiOverlay(), 0, 0, width, height, 0x66FF0000);
-                        }
+                    boolean hasEyes = CuriosApi.getCuriosHelper().findFirstCurio(player, ModItems.SCARLET_EYES.get()).isPresent();
+                    if (hasEyes && (player.hasEffect(MobEffects.NIGHT_VISION) || player.level().isNight())) {
+                        int width = event.getGuiGraphics().guiWidth();
+                        int height = event.getGuiGraphics().guiHeight();
+                        event.getGuiGraphics().fill(0, 0, width, height, 0x66FF0000);
                     }
                 }
             }
@@ -191,6 +261,7 @@ public class ClientModEvents {
     public static class ClientSetupEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            loadScarletEyesConfig();
             event.enqueueWork(() -> {
                 ItemProperties.register(ModItems.NEPTUNES_HELMET.get(), ResourceLocation.fromNamespaceAndPath(RunicCuriosities.MODID, "anim_state"),
                         (itemStack, clientLevel, livingEntity, seed) -> {

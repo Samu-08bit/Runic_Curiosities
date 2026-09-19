@@ -22,7 +22,7 @@ public class ModItems {
             () -> new TalismanItem(new Item.Properties().stacksTo(1)));
 
     public static final DeferredItem<Item> GOLDEN_EMERALD = ITEMS.register("golden_emerald",
-            () -> new TalismanItem(new Item.Properties().stacksTo(1)));
+            () -> new GoldenEmeraldItem(new Item.Properties().stacksTo(1)));
 
     public static final DeferredItem<Item> EGG_OF_GLUTTONY = ITEMS.register("egg_of_gluttony",
             () -> new TalismanItem(new Item.Properties().stacksTo(1)));
