@@ -236,7 +236,7 @@ public class ClientModEvents {
 
         @SubscribeEvent
         public static void onRenderGuiOverlay(RenderGuiLayerEvent.Post event) {
-            // In NeoForge 1.21.1, camera overlays (including vignette) are under VanillaGuiLayers.CAMERA_OVERLAYS
+
             if (VanillaGuiLayers.CAMERA_OVERLAYS.equals(event.getName()) || "camera_overlays".equals(event.getName().getPath())) {
                 if (!scarletEyesEffectEnabled) {
                     return;

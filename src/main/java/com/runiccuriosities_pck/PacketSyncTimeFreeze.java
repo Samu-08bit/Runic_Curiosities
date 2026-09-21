@@ -8,10 +8,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketSyncTimeFreeze implements CustomPacketPayload {
 
-    // 1. Definisci il TYPE univoco
     public static final Type<PacketSyncTimeFreeze> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(RunicCuriosities.MODID, "sync_time_freeze"));
 
-    // 2. Lo StreamCodec (Encoding e Decoding)
     public static final StreamCodec<FriendlyByteBuf, PacketSyncTimeFreeze> STREAM_CODEC = StreamCodec.ofMember(
             PacketSyncTimeFreeze::write,
             PacketSyncTimeFreeze::new
@@ -27,14 +25,12 @@ public class PacketSyncTimeFreeze implements CustomPacketPayload {
         this.z = z;
     }
 
-    // Decoder
     public PacketSyncTimeFreeze(FriendlyByteBuf buf) {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
     }
 
-    // Encoder
     public void write(FriendlyByteBuf buf) {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
@@ -46,14 +42,12 @@ public class PacketSyncTimeFreeze implements CustomPacketPayload {
         return TYPE;
     }
 
-    // Handle (aggiornato per IPayloadContext)
     public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ClientDistHandler.handlePacket(this.x, this.y, this.z);
         });
     }
 
-    // Inner class (Questa va benissimo lasciarla per isolare il codice client)
     private static class ClientDistHandler {
         private static void handlePacket(double x, double y, double z) {
             ClientTimeFreezeManager.addTimeStop(x, y, z);

@@ -14,10 +14,9 @@ import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.HoeItem;
 
 public class ModItems {
-    // In NeoForge 1.21.1 si usa DeferredRegister.Items per gli oggetti
+
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(RunicCuriosities.MODID);
 
-    // Tutti i RegistryObject sono diventati DeferredItem
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.register("example_item",
             () -> new TalismanItem(new Item.Properties().stacksTo(1)));
 
@@ -84,7 +83,6 @@ public class ModItems {
     public static final DeferredItem<Item> SAVIRITIUM_COMPOUND_BLOCK_ITEM = ITEMS.register("saviritium_compound_block",
             () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16).fireResistant()));
 
-    // In NeoForge si usa DeferredSpawnEggItem al posto di ForgeSpawnEggItem
     public static final DeferredItem<Item> SAVIRITIUM_GOLEM_SPAWN_EGG = ITEMS.register("saviritium_golem_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new Item.Properties().stacksTo(16).fireResistant()));
 
@@ -117,7 +115,7 @@ public class ModItems {
             ));
 
     // ==========================================
-    // UTENSILI E ARMI IN SAVIRITIUM (1.21.1 Attribute Update)
+    // SAVIRITIUM WEAPONS
     // ==========================================
     public static final DeferredItem<Item> SAVIRITIUM_SWORD = ITEMS.register("saviritium_sword",
             () -> new SwordItem(ModMaterials.SAVIRITIUM_TIER, new Item.Properties().fireResistant().attributes(SwordItem.createAttributes(ModMaterials.SAVIRITIUM_TIER, 3, -2.4F))));
@@ -135,7 +133,7 @@ public class ModItems {
             () -> new HoeItem(ModMaterials.SAVIRITIUM_TIER, new Item.Properties().fireResistant().attributes(HoeItem.createAttributes(ModMaterials.SAVIRITIUM_TIER, -4, 0.0F))));
 
     // ==========================================
-    // ARMATURA IN SAVIRITIUM
+    // SAVIRITIUM ARMOR
     // ==========================================
     public static final DeferredItem<Item> SAVIRITIUM_HELMET = ITEMS.register("saviritium_helmet",
             () -> new TranslucentArmorItem(ModMaterials.SAVIRITIUM_ARMOR_MATERIAL, ArmorItem.Type.HELMET, new Item.Properties().fireResistant()));

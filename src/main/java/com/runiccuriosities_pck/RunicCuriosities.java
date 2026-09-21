@@ -13,13 +13,11 @@ import top.theillusivec4.curios.api.SlotTypePreset;
 public class RunicCuriosities {
     public static final String MODID = "runic_curiosities";
 
-    // In 1.21.1 il ModEventBus viene passato direttamente nel costruttore!
     public RunicCuriosities(IEventBus modEventBus) {
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::enqueueIMC);
 
-        // Registrazione dei Blocchi, Items, ecc.
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
@@ -27,18 +25,16 @@ public class RunicCuriosities {
         ModEffects.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
 
-        // I nuovi registri della 1.21.1 che abbiamo aggiunto!
         ModMaterials.ARMOR_MATERIALS.register(modEventBus);
         ModCommands.ATTACHMENT_TYPES.register(modEventBus);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        // I pacchetti di rete si registrano automaticamente ora tramite ModMessages,
-        // quindi non serve più chiamare PacketHandler o ModMessages.register() qui.
+
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
-        // Registration for all custom Curios inventory slot types and sizes
+
         InterModComms.sendTo("curios", "register_type", () ->
                 SlotTypePreset.CHARM.getMessageBuilder().size(3).build());
 
@@ -66,7 +62,6 @@ public class RunicCuriosities {
         InterModComms.sendTo("curios", "register_type", () ->
                 SlotTypePreset.HEAD.getMessageBuilder().size(3).build());
 
-        // Custom slot per i boots con l'icona corretta (ResourceLocation 1.21.1)
         InterModComms.sendTo("curios", "register_type", () ->
                 new SlotTypeMessage.Builder("boots")
                         .size(2)

@@ -12,7 +12,6 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class ClientTimeFreezeManager {
 
-    // Una classe per rappresentare una singola zona di "Stop del Tempo"
     public static class TimeStopInstance {
         public final double x, y, z;
         public int ticksRemaining;
@@ -21,14 +20,12 @@ public class ClientTimeFreezeManager {
             this.x = x;
             this.y = y;
             this.z = z;
-            this.ticksRemaining = 300; // 15 secondi per zona
+            this.ticksRemaining = 300; // 15 sec
         }
     }
 
-    // Lista di tutti i Time Stops attualmente attivi nel mondo
     public static final List<TimeStopInstance> activeStops = new ArrayList<>();
 
-    // Metodo per generare una nuova zona di Time Stop
     public static void addTimeStop(double x, double y, double z) {
         activeStops.add(new TimeStopInstance(x, y, z));
     }
@@ -41,7 +38,7 @@ public class ClientTimeFreezeManager {
             TimeStopInstance instance = iterator.next();
 
             if (instance.ticksRemaining > 0) {
-                // === EFFETTO SONORO DEL TICCHETTIO DELL'OROLOGIO ===
+                //SOUND EFFECT
                 if (instance.ticksRemaining % 20 == 0) {
                     Minecraft mc = Minecraft.getInstance();
                     if (mc.level != null) {
@@ -60,7 +57,7 @@ public class ClientTimeFreezeManager {
                 }
                 instance.ticksRemaining--;
             } else {
-                // Rimuove il Time Stop quando il suo timer raggiunge 0
+                // Remove Time Stop
                 iterator.remove();
             }
         }

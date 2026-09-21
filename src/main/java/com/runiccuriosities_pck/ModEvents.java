@@ -292,6 +292,16 @@ public class ModEvents {
 
                 int uses = nbt.contains("Uses") ? nbt.getInt("Uses") : 1;
 
+                if (player.getCooldowns().isOnCooldown(ModItems.TIME_HOURGLASS.get())) {
+                    if (uses > 0 && !nbt.getBoolean("UsedInCooldown")) {
+                        uses = 0;
+                        nbt.putInt("Uses", 0);
+                        nbt.putBoolean("UsedInCooldown", true);
+                    }
+                } else {
+                    nbt.remove("UsedInCooldown");
+                }
+
                 if (uses == 0) {
                     int sandSlot = -1;
                     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {

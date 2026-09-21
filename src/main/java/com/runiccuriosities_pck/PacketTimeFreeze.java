@@ -18,10 +18,8 @@ import java.util.List;
 
 public class PacketTimeFreeze implements CustomPacketPayload {
 
-    // 1. Definisci il TYPE univoco
     public static final Type<PacketTimeFreeze> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(RunicCuriosities.MODID, "time_freeze"));
 
-    // 2. Lo StreamCodec (vuoto perché non inviamo dati in questo pacchetto, è solo un segnale)
     public static final StreamCodec<FriendlyByteBuf, PacketTimeFreeze> STREAM_CODEC = StreamCodec.ofMember(
             PacketTimeFreeze::write,
             PacketTimeFreeze::new
@@ -48,7 +46,6 @@ public class PacketTimeFreeze implements CustomPacketPayload {
                 Vec3 pos = player.position();
                 ServerLevel level = player.serverLevel();
 
-                // Recuperiamo il suono custom
                 net.minecraft.sounds.SoundEvent chosenSound = ModCommands.getHourglassSound(player, net.minecraft.sounds.SoundEvents.END_PORTAL_SPAWN);
                 level.playSound(null, pos.x, pos.y, pos.z, chosenSound, net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.5F);
                 level.playSound(null, pos.x, pos.y, pos.z, net.minecraft.sounds.SoundEvents.BELL_RESONATE, net.minecraft.sounds.SoundSource.PLAYERS, 2.0F, 0.1F);
@@ -56,11 +53,10 @@ public class PacketTimeFreeze implements CustomPacketPayload {
                 double radius = 12.0;
                 AABB freezeArea = player.getBoundingBox().inflate(radius);
 
-                // Il talismano colpisce tutti TRANNE il player che lo lancia
                 List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, freezeArea, entity -> entity != player);
 
                 for (LivingEntity entity : targets) {
-                    // 1.21.1: Usiamo i nuovi Attachments definiti in ModCommands al posto dei vecchi PersistentData!
+
                     entity.setData(ModCommands.QUEUED_TO_DIE, false);
                     entity.setData(ModCommands.STORED_LETHAL_DAMAGE, 0.0f);
 
@@ -74,7 +70,6 @@ public class PacketTimeFreeze implements CustomPacketPayload {
                     entity.setNoGravity(true);
                 }
 
-                // In 1.21.1 il PacketDistributor si usa così (molto più facile!)
                 PacketDistributor.sendToAllPlayers(new PacketSyncTimeFreeze(pos.x, pos.y, pos.z));
             }
         });
