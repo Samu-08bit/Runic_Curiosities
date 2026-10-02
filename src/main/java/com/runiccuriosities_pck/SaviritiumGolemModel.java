@@ -7,7 +7,6 @@ public class SaviritiumGolemModel extends GeoModel<SaviritiumGolemEntity> {
 
     @Override
     public ResourceLocation getModelResource(SaviritiumGolemEntity object) {
-        // 1.21.1: fromNamespaceAndPath
         return ResourceLocation.fromNamespaceAndPath(RunicCuriosities.MODID, "geo/saviritium_golem.geo.json");
     }
 

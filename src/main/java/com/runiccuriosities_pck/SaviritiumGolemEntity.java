@@ -30,6 +30,12 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -41,6 +47,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.EnumSet;
 import java.util.List;
+
 
 public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, RangedAttackMob {
 
@@ -73,6 +80,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D);
     }
 
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_PICKING_UP, false);
@@ -99,10 +107,12 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
     }
 
     @Nullable
+    @Override
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
         return null;
     }
 
+    @Override
     public void tick() {
         super.tick();
         if (!this.level().isClientSide && this.isStandingUp()) {
@@ -115,6 +125,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         }
     }
 
+    @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new GolemSitOrStayGoal(this));
         this.goalSelector.addGoal(2, new GolemLaserAttackGoal(this));
@@ -130,6 +141,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Monster.class, true));
     }
 
+    @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!this.isTame()) {
             if (!this.level().isClientSide) {
@@ -153,7 +165,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             } else if (player.getItemInHand(hand).isEmpty()) {
                 if (this.level().isClientSide) {
-                    player.displayClientMessage(Component.literal("Menu temporaneamente disattivato per via della build."), false);
+                    openGolemScreen();
                 }
                 return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
@@ -161,6 +173,14 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         return super.mobInteract(player, hand);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    private void openGolemScreen() {
+        net.minecraft.client.Minecraft.getInstance().setScreen(
+                new GolemCommandScreen(this.getId(), this.isInSittingPose(), this.isStaying())
+        );
+    }
+
+    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("IsStaying", this.isStaying());
@@ -180,6 +200,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         }
     }
 
+    @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("IsStaying")) {
@@ -201,6 +222,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         }
     }
 
+    @Override
     protected void dropEquipment() {
         super.dropEquipment();
         if (this.inventory != null) {
@@ -225,6 +247,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         return false;
     }
 
+    @Override
     public boolean canAttack(LivingEntity target) {
         if (target instanceof SaviritiumGolemEntity otherGolem) {
             if (this.isTame() && otherGolem.isTame()) {
@@ -236,25 +259,31 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         return super.canAttack(target);
     }
 
+    @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         GolemLaserEntity laser = new GolemLaserEntity(ModEntities.GOLEM_LASER.get(), this, this.level());
         double d0 = target.getX() - this.getX();
         double d1 = target.getY(0.5D) - laser.getY();
         double d2 = target.getZ() - this.getZ();
+
         laser.shoot(d0, d1, d2, 1.5F, 0.0F);
         laser.setBaseDamage(14.0D);
+
         this.playSound(ModSounds.LASER_SHOOT.get(), 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         this.level().addFreshEntity(laser);
     }
 
+    @Override
     protected net.minecraft.sounds.SoundEvent getDeathSound() {
         return ModSounds.GOLEM_DEATH.get();
     }
 
+    @Override
     protected net.minecraft.sounds.SoundEvent getHurtSound(net.minecraft.world.damagesource.DamageSource damageSourceIn) {
         return ModSounds.GOLEM_HURT.get();
     }
 
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 5, event -> {
             if (this.isInSittingPose()) {
@@ -282,6 +311,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
         }));
     }
 
+    @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
@@ -297,6 +327,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
+        @Override
         public boolean canUse() {
             if (this.golem.isOrderedToSit()) return false;
             LivingEntity livingentity = this.golem.getTarget();
@@ -307,21 +338,25 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             return false;
         }
 
+        @Override
         public boolean canContinueToUse() {
             return (this.canUse() || this.attackTick > 0) && this.target != null && this.target.isAlive();
         }
 
+        @Override
         public void start() {
             this.attackTick = -1;
             this.cooldown = 10;
         }
 
+        @Override
         public void stop() {
             this.target = null;
             this.attackTick = -1;
             this.golem.setShooting(false);
         }
 
+        @Override
         public void tick() {
             if (this.target == null || !this.target.isAlive()) return;
             double distSq = this.golem.distanceToSqr(this.target);
@@ -370,6 +405,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
+        @Override
         public boolean canUse() {
             if (this.golem.isOrderedToSit() || !this.golem.isTame()) return false;
             if (this.golem.isPickingUp() || this.golem.isShooting()) return false;
@@ -392,6 +428,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             return false;
         }
 
+        @Override
         public boolean canContinueToUse() {
             if (this.golem.isOrderedToSit()) return false;
             if (this.golem.getTarget() != null) return false;
@@ -400,12 +437,14 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             return this.targetItem != null && this.targetItem.isAlive() && this.golem.canHoldItem(this.targetItem.getItem());
         }
 
+        @Override
         public void start() {
             this.pickupTick = 0;
             this.stuckTimeout = 0;
             this.golem.getNavigation().moveTo(this.targetItem, 1.2D);
         }
 
+        @Override
         public void stop() {
             this.targetItem = null;
             this.golem.setPickingUp(false);
@@ -414,6 +453,7 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             this.golem.getNavigation().stop();
         }
 
+        @Override
         public void tick() {
             if (this.golem.isPickingUp()) {
                 this.golem.getNavigation().stop();
@@ -464,10 +504,105 @@ public class SaviritiumGolemEntity extends TamableAnimal implements GeoEntity, R
             this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
         }
 
+        @Override
         public boolean canUse() { return this.golem.isOrderedToSit(); }
 
+        @Override
         public void start() { this.golem.getNavigation().stop(); }
 
+        @Override
         public void tick() { this.golem.getNavigation().stop(); }
+    }
+
+
+    @OnlyIn(Dist.CLIENT)
+    public static class GolemCommandScreen extends Screen {
+
+        private final int entityId;
+        private final boolean isSitting;
+        private final boolean isStaying;
+
+        public GolemCommandScreen(int entityId, boolean isSitting, boolean isStaying) {
+            super(Component.literal("Saviritium Golem Commands"));
+            this.entityId = entityId;
+            this.isSitting = isSitting;
+            this.isStaying = isStaying;
+        }
+
+        @Override
+        protected void init() {
+            super.init();
+
+            int btnWidth = 120;
+            int btnHeight = 20;
+            int spacing = 24;
+
+            int startY = this.height / 2 - (spacing * 3) / 2;
+
+            Button followBtn = Button.builder(Component.literal("Follow Me"), b -> {
+                PacketDistributor.sendToServer(new GolemCommandPacket(this.entityId, 0));
+                this.onClose();
+            }).bounds(this.width / 2 - btnWidth / 2, startY, btnWidth, btnHeight).build();
+            followBtn.active = !this.isSitting;
+            this.addRenderableWidget(followBtn);
+
+            Button stayBtn = Button.builder(Component.literal("Stay"), b -> {
+                PacketDistributor.sendToServer(new GolemCommandPacket(this.entityId, 1));
+                this.onClose();
+            }).bounds(this.width / 2 - btnWidth / 2, startY + spacing, btnWidth, btnHeight).build();
+            stayBtn.active = !this.isSitting;
+            this.addRenderableWidget(stayBtn);
+
+            this.addRenderableWidget(Button.builder(Component.literal("Sit / Stand Up"), b -> {
+                PacketDistributor.sendToServer(new GolemCommandPacket(this.entityId, 2));
+                this.onClose();
+            }).bounds(this.width / 2 - btnWidth / 2, startY + spacing * 2, btnWidth, btnHeight).build());
+        }
+
+        @Override
+        public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            this.renderTransparentBackground(guiGraphics);
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            this.renderTransparentBackground(guiGraphics);
+
+            super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+            guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, this.height / 2 - 60, 0xFFFFFF);
+
+            int btnWidth = 120;
+            int spacing = 24;
+            int startY = this.height / 2 - (spacing * 3) / 2;
+            int statusX = this.width / 2 + btnWidth / 2 + 10;
+
+            boolean isFollowActive = !this.isSitting && !this.isStaying;
+            boolean isStayActive = !this.isSitting && this.isStaying;
+            boolean isSitActive = this.isSitting;
+
+            if (isFollowActive) {
+                guiGraphics.drawString(this.font, "ON", statusX, startY + 6, 0x00FF00, false);
+            } else {
+                guiGraphics.drawString(this.font, "OFF", statusX, startY + 6, 0xFF0000, false);
+            }
+
+            if (isStayActive) {
+                guiGraphics.drawString(this.font, "ON", statusX, startY + spacing + 6, 0x00FF00, false);
+            } else {
+                guiGraphics.drawString(this.font, "OFF", statusX, startY + spacing + 6, 0xFF0000, false);
+            }
+
+            if (isSitActive) {
+                guiGraphics.drawString(this.font, "ON", statusX, startY + spacing * 2 + 6, 0x00FF00, false);
+            } else {
+                guiGraphics.drawString(this.font, "OFF", statusX, startY + spacing * 2 + 6, 0xFF0000, false);
+            }
+        }
+
+        @Override
+        public boolean isPauseScreen() {
+            return false;
+        }
     }
 }

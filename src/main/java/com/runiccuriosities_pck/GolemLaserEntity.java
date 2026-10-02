@@ -1,6 +1,7 @@
 package com.runiccuriosities_pck;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,8 +15,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class GolemLaserEntity extends AbstractArrow implements ItemSupplier {
+
     public static final ItemStack PROJECTILE_ITEM = new ItemStack(Blocks.AIR);
 
     public GolemLaserEntity(EntityType<? extends GolemLaserEntity> type, Level world) {
@@ -34,14 +35,20 @@ public class GolemLaserEntity extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    public boolean isNoGravity() { return true; }
+    public boolean isNoGravity() {
+        return true;
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public ItemStack getItem() { return PROJECTILE_ITEM; }
+    public ItemStack getItem() {
+        return PROJECTILE_ITEM;
+    }
 
     @Override
-    protected ItemStack getDefaultPickupItem() { return PROJECTILE_ITEM; }
+    protected ItemStack getDefaultPickupItem() {
+        return PROJECTILE_ITEM;
+    }
 
     @Override
     protected void doPostHurtEffects(LivingEntity entity) {
@@ -76,7 +83,20 @@ public class GolemLaserEntity extends AbstractArrow implements ItemSupplier {
     @Override
     public void tick() {
         super.tick();
-        if (this.tickCount > 60) this.discard();
+
+        if (this.level().isClientSide) {
+            this.level().addParticle(ParticleTypes.END_ROD,
+                    this.getX(), this.getY(), this.getZ(),
+                    0.0D, 0.0D, 0.0D);
+
+            this.level().addParticle(ParticleTypes.ELECTRIC_SPARK,
+                    this.getX(), this.getY(), this.getZ(),
+                    0.0D, 0.0D, 0.0D);
+        }
+
+        if (this.tickCount > 60) {
+            this.discard();
+        }
     }
 
     public static GolemLaserEntity shoot(Level world, LivingEntity entity, RandomSource source) {
@@ -102,6 +122,7 @@ public class GolemLaserEntity extends AbstractArrow implements ItemSupplier {
         double dx = target.getX() - entity.getX();
         double dy = target.getY() + target.getEyeHeight() - 1.1;
         double dz = target.getZ() - entity.getZ();
+
         entityarrow.shoot(dx, dy - entityarrow.getY() + Math.hypot(dx, dz) * 0.2F, dz, 3f * 2, 12.0F);
         entityarrow.setSilent(true);
         entityarrow.setBaseDamage(5);

@@ -6,6 +6,6 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class SaviritiumGolemRenderer extends GeoEntityRenderer<SaviritiumGolemEntity> {
     public SaviritiumGolemRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new SaviritiumGolemModel());
-        this.shadowRadius = 0.5f; // Grandezza dell'ombra sotto l'entità
+        this.shadowRadius = 0.5f; // shadow
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.commands.Commands;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -259,6 +260,7 @@ public class ClientModEvents {
 
     @EventBusSubscriber(modid = RunicCuriosities.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientSetupEvents {
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             loadScarletEyesConfig();
@@ -272,6 +274,12 @@ public class ClientModEvents {
                             return 0.0F;
                         });
             });
+        }
+
+        @SubscribeEvent
+        public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.SAVIRITIUM_GOLEM.get(), SaviritiumGolemRenderer::new);
+            event.registerEntityRenderer(ModEntities.GOLEM_LASER.get(), GolemLaserRenderer::new);
         }
     }
 }
