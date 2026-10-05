@@ -1,27 +1,27 @@
 modLoader="javafml"
-loaderVersion="[47,)"
-license="MIT and HydroVoltz (SavistarIT)"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
 
 [[mods]]
-modId="runic_curiosities"
-version="1.20.1-1.2.2a"
-displayName="Runic Curiosities [Magic & Items]"
-authors="HydroVoltz (SavistarIT)"
-logoFile="icon.png"
-description='''
-A unique and elegant talisman mod that adds 2D runic trinkets and other things compatible with Curios API and Geckolib.
-'''
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+logoFile="${mod_logo_file}"
+description='''${mod_description}'''
 
-[[dependencies.runic_curiosities]]
+
+[[dependencies.${mod_id}]]
 modId="forge"
 mandatory=true
-versionRange="[47,)"
+versionRange="${forge_version_range}"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.runic_curiosities]]
+
+[[dependencies.${mod_id}]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.20.1,1.21)"
+versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
