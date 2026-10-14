@@ -1,17 +1,26 @@
 package com.runiccuriosities_pck;
 
+import com.runiccuriosities_pck.client.model.Modelgolem_laser;
+import com.runiccuriosities_pck.client.renderer.GolemLaserRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,18 +28,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+
 import java.awt.Color;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.NonNullList;
 import java.util.WeakHashMap;
 
 public class ClientModEvents {
 
-    // 1. FORGE Bus: For in-game events (e.g. red overlay on the screen)
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientForgeEvents {
 
@@ -57,7 +60,7 @@ public class ClientModEvents {
                     int rgb = Color.HSBtoRGB((time % 2000L) / 2000.0f, 1.0f, 1.0f);
 
                     switch(path) {
-                        case "example_item": // In case the ID is still example_item
+                        case "example_item":
                         case "talisman_of_intuition":
                             event.getToolTip().add(Component.literal("Provides infinite Glowing status effect while equipped.").withStyle(ChatFormatting.YELLOW));
                             break;
@@ -144,7 +147,6 @@ public class ClientModEvents {
                 }
                 savedArmor.put(player, copy);
 
-                // Hide Helmet (3), Chestplate (2), Leggings (1). Keep Boots (0) intact!
                 player.getInventory().armor.set(3, ItemStack.EMPTY);
                 player.getInventory().armor.set(2, ItemStack.EMPTY);
                 player.getInventory().armor.set(1, ItemStack.EMPTY);
@@ -184,22 +186,30 @@ public class ClientModEvents {
         }
     }
 
-    // 2. MOD Bus: For client-side setup registrations (e.g. Helmet animation)
     @Mod.EventBusSubscriber(modid = RunicCuriosities.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientSetupEvents {
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
-                // Register the "anim_state" property for Neptune's Helmet
                 ItemProperties.register(ModItems.NEPTUNES_HELMET.get(), new ResourceLocation(RunicCuriosities.MODID, "anim_state"),
                         (itemStack, clientLevel, livingEntity, seed) -> {
                             if (itemStack.hasTag() && itemStack.getTag().contains("AnimState")) {
-                                // Returns 0.0, 0.5, or 1.0 depending on the state to change texture
                                 return itemStack.getTag().getInt("AnimState") / 2.0F;
                             }
                             return 0.0F;
                         });
             });
+        }
+
+        @SubscribeEvent
+        public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(Modelgolem_laser.LAYER_LOCATION, Modelgolem_laser::createBodyLayer);
+        }
+
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.GOLEM_LASER.get(), GolemLaserRenderer::new);
         }
     }
 }
