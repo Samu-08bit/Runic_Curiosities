@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SNG",
+    "OBO",
+    "ONO"
+  ],
+  "key": {
+    "S": {
+      "item": "runic_curiosities:saviritium_compound_block"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "B": {
+      "item": "minecraft:beacon"
+    }
+  },
+  "result": {
+    "item": "runic_curiosities:magic_mod_table",
+    "id": "runic_curiosities:magic_mod_table",
+    "count": 1
+  }
+}

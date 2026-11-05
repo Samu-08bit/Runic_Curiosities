@@ -44,5 +44,6 @@
   "item.runic_curiosities.time_hourglass": "Sablier du Temps",
   "key.runic_curiosities.freeze_time": "Compétence Arrêt du Temps",
   "key.categories.runic_curiosities": "Mod Runic Curiosities",
-  "creativetab.runic_curiosities_tab": "Runic Curiosities"
+  "creativetab.runic_curiosities_tab": "Runic Curiosities",
+  "block.runic_curiosities.magic_mod_table": "Magic Mod Table"
 }

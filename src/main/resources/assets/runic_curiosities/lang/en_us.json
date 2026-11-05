@@ -9,6 +9,8 @@
   "upgrade.runic_curiosities.saviritium_upgrade": "Saviritium Upgrade",
   "item.runic_curiosities.smithing_template.saviritium_upgrade.base_slot_description": "Add Netherite armor, weapon, or tool",
   "item.runic_curiosities.smithing_template.saviritium_upgrade.additions_slot_description": "Add Saviritium Compound",
+  "block.runic_curiosities.magic_mod_table": "Magic Mod Table",
+  "item.runic_curiosities.blank_rune": "Blank Rune",
 
   "item.runic_curiosities.saviritium_sword": "Saviritium Sword",
   "item.runic_curiosities.saviritium_pickaxe": "Saviritium Pickaxe",

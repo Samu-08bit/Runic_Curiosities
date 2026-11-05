@@ -77,8 +77,10 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.SAVIRITIUM_COMPOUND_BLOCK.get(), new Item.Properties().stacksTo(16).fireResistant()));
 
     public static final RegistryObject<net.minecraft.world.item.Item> SAVIRITIUM_GOLEM_SPAWN_EGG = ITEMS.register("saviritium_golem_spawn_egg",
-            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties().stacksTo(16).fireResistant()));
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.SAVIRITIUM_GOLEM, 0xFFFFFF, 0xFFFFFF, new net.minecraft.world.item.Item.Properties().stacksTo(1).fireResistant()));
 
+    public static final RegistryObject<Item> MAGIC_MOD_TABLE = ITEMS.register("magic_mod_table",
+            () -> new BlockItem(ModBlocks.MAGIC_MOD_TABLE.get(), new Item.Properties().stacksTo(64)));
     // ==========================================
     // SMITHING TEMPLATE
     // ==========================================
@@ -106,7 +108,7 @@ public class ModItems {
                     SAVIRITIUM_UPGRADE_EMPTY_SLOTS,
                     SAVIRITIUM_UPGRADE_ADDITIONS_SLOTS
             ) {
-                // Sovrascriviamo la resistenza al fuoco direttamente sulla classe!
+
                 @Override
                 public boolean isFireResistant() {
                     return true;
@@ -114,7 +116,7 @@ public class ModItems {
             });
 
     // ==========================================
-    // UTENSILI E ARMI IN SAVIRITIUM
+    // SAVIRITIUM WEAPONS
     // ==========================================
     public static final RegistryObject<Item> SAVIRITIUM_SWORD = ITEMS.register("saviritium_sword",
             () -> new net.minecraft.world.item.SwordItem(ModMaterials.SAVIRITIUM_TIER, 3, -2.4F, new Item.Properties().fireResistant()));
@@ -132,7 +134,7 @@ public class ModItems {
             () -> new net.minecraft.world.item.HoeItem(ModMaterials.SAVIRITIUM_TIER, -4, 0.0F, new Item.Properties().fireResistant()));
 
     // ==========================================
-    // ARMATURA IN SAVIRITIUM
+    // SAVIRITIUM ARMOR
     // ==========================================
     public static final RegistryObject<Item> SAVIRITIUM_HELMET = ITEMS.register("saviritium_helmet",
             () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.HELMET, new Item.Properties().fireResistant()));
@@ -145,4 +147,12 @@ public class ModItems {
 
     public static final RegistryObject<Item> SAVIRITIUM_BOOTS = ITEMS.register("saviritium_boots",
             () -> new TranslucentArmorItem(ModMaterials.SaviritiumArmorMaterial.SAVIRITIUM, net.minecraft.world.item.ArmorItem.Type.BOOTS, new Item.Properties().fireResistant()));
+
+    //==========================================
+    // RUNES
+    // =========================================
+    public static final RegistryObject<Item> BLANK_RUNE = ITEMS.register("blank_rune",
+            () -> new Item(new Item.Properties().stacksTo(64)));
+
+
 }

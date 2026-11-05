@@ -1,5 +1,6 @@
 package com.runiccuriosities_pck;
 
+import com.runiccuriosities_pck.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -19,7 +20,12 @@ public class ModCreativeTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND.get());
                         pOutput.accept(ModItems.SAVIRITIUM_COMPOUND_BLOCK_ITEM.get());
+                        pOutput.accept(ModItems.MAGIC_MOD_TABLE.get());
                         pOutput.accept(ModItems.SAVIRITIUM_GOLEM_SPAWN_EGG.get());
+
+                        // Runes
+                        pOutput.accept(ModItems.BLANK_RUNE.get());
+
                         // --- Saviritium Set ---
                         pOutput.accept(ModItems.SAVIRITIUM_UPGRADE_SMITHING_TEMPLATE.get());
                         pOutput.accept(ModItems.SAVIRITIUM_SWORD.get());

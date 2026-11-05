@@ -12,6 +12,9 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, RunicCuriosities.MODID);
 
+    public static final RegistryObject<Block> MAGIC_MOD_TABLE = BLOCKS.register("magic_mod_table",
+            MagicModTableBlock::new);
+
     public static final RegistryObject<Block> SAVIRITIUM_COMPOUND_BLOCK = BLOCKS.register("saviritium_compound_block",
             () -> new Block(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BLUE)
